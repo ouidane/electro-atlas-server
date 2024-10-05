@@ -1,0 +1,3110 @@
+openapi: 3.0.0
+info:
+  title: Electro Atlas Store API
+  description: This is the API documentation for managing electro atlas store.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@electroatlas.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: API server
+
+tags:
+  - name: auth
+    description: Authentication endpoints
+  - name: users
+    description: User operations
+  - name: carts
+    description: Operations related to shopping carts
+  - name: wishlist
+    description: Operations related to wishlist
+  - name: categories
+    description: Operations related to categories
+  - name: navigation data
+    description: Operations related to navigation data
+  - name: products
+    description: Operations related to products
+  - name: reviews
+    description: Operations related to product reviews
+  - name: special products
+    description: Operations related to live search, best offers, best sellers,recommended products and product filters
+  - name: orders
+    description: Operations related to orders
+  - name: payment
+    description: Operations related to payment
+  - name: analytics
+    description: Operations related to analytics
+
+paths:
+  /auth/register:
+    post:
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        "200":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/logout:
+    delete:
+      tags: [auth]
+      summary: Logout a user
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Logout completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/verify-email:
+    post:
+      tags: [auth]
+      summary: Verify user email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                verificationCode:
+                  type: string
+      responses:
+        "200":
+          description: Email Verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/forgot-password:
+    post:
+      tags: [auth]
+      summary: Request a password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Please check your email for the reset password link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/reset-password:
+    post:
+      tags: [auth]
+      summary: Reset user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resetToken:
+                  type: string
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /auth/google:
+    get:
+      tags: [auth]
+      summary: Initiate Google authentication
+      responses:
+        "302":
+          description: Redirects to Google for authentication
+
+  /users/current/connect:
+    get:
+      tags: [users]
+      summary: Get current user
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Current user retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  cartId:
+                    type: string
+                  wishlistId:
+                    type: string
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    patch:
+      tags: [users]
+      summary: Update current user
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                familyName:
+                  type: string
+                givenName:
+                  type: string
+                phone:
+                  type: string
+                contactEmail:
+                  type: string
+                contactPhone:
+                  type: string
+                contactWebsite:
+                  type: string
+                line1:
+                  type: string
+                line2:
+                  type: string
+                city:
+                  type: string
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /users:
+    get:
+      tags: [users]
+      summary: Get all users (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of users to return per page
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            example: 1
+        - name: sort
+          in: query
+          required: false
+          description: Sort products by a specific field. Use '-' prefix for descending order. Allowed values: createdAt, updatedAt, email, isVerified, platform, role, familyName, givenName, fullName, city, country. (comma-separated for multiple values).
+          schema:
+            type: string
+            default: createdAt
+        - name: platform
+          in: query
+          required: false
+          description: Filter users by platform
+          schema:
+            type: string
+            enum: ["marketplace", "vendor"]
+            example: "vendor"
+        - name: isVerified
+          in: query
+          required: false
+          description: Filter users by verification status
+          schema:
+            type: boolean
+            example: true
+        - name: city
+          in: query
+          required: false
+          description: Filter users by city (comma-separated for multiple values)
+          schema:
+            type: string
+            example: "Casablanca,Marrakech"
+        - name: country
+          in: query
+          required: false
+          description: Filter users by country (comma-separated for multiple values)
+          schema:
+            type: string
+            example: "Morocco"
+        - name: query
+          in: query
+          required: false
+          description: Search users by fullName, phone, email (partial matches allowed)
+          schema:
+            type: string
+            example: "braun"
+        - name: createdAfter
+          in: query
+          required: false
+          description: Filter users created after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+            example: "2023-01-01T00:00:00Z"
+        - name: createdBefore
+          in: query
+          required: false
+          description: Filter users created before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+            example: "2023-12-31T23:59:59Z"
+        - name: updatedAfter
+          in: query
+          required: false
+          description: Filter users updated after this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+            example: "2023-01-01T00:00:00Z"
+        - name: updatedBefore
+          in: query
+          required: false
+          description: Filter users updated before this date (ISO 8601 format)
+          schema:
+            type: string
+            format: date-time
+            example: "2023-12-31T23:59:59Z"
+        - name: hasProfile
+          in: query
+          required: false
+          description: Filter users based on profile presence (true/false)
+          schema:
+            type: boolean
+            example: true
+        - name: inActive
+          in: query
+          required: false
+          description: Filter inActive users (those not updated in the past 6 months)
+          schema:
+            type: boolean
+            example: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags: [users]
+      summary: Create a new user (Admin only)
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                platform:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /users/{userId}:
+    get:
+      tags: [users]
+      summary: Get user by ID (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  User:
+                    $ref: "#/components/schemas/User"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    patch:
+      tags: [users]
+      summary: Update user by ID (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+                phone:
+                  type: string
+                contactEmail:
+                  type: string
+                contactPhone:
+                  type: string
+                contactWebsite:
+                  type: string
+                line1:
+                  type: string
+                line2:
+                  type: string
+                city:
+                  type: string
+                country:
+                  type: string
+                postalCode:
+                  type: string
+                role:
+                  type: string
+                description:
+                  type: string
+      responses:
+        "200":
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags: [users]
+      summary: Delete user by ID (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /nav-data:
+    get:
+      tags: [navigation data]
+      summary: Get navigation data
+      responses:
+        "200":
+          description: Successfully retrieved navigation data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allDepartments:
+                    $ref: "#/components/schemas/Departments"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /categories/parent:
+    get:
+      tags: [categories]
+      summary: Get all parent categories
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of categories to return per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+        - name: sort
+          in: query
+          required: false
+          description: Sort products by a specific field. Use '-' prefix for descending order. Allowed values: name, updatedAt, updatedAt. (comma-separated for multiple values)
+          schema:
+            type: string
+            default: createdAt
+        - name: name
+          in: query
+          required: false
+          description: Filter categories by name
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved parent categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  parentCategories:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ParentCategory"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "500":
+          description: Internal server error
+    post:
+      tags: [categories]
+      summary: Create a new parent category (Admin only)
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+              properties:
+                name:
+                  type: string
+                  description: The name of the parent category
+                description:
+                  type: string
+                  description: A brief description of the parent category
+                image:
+                  type: string
+                  format: binary
+                  description: The image file for the parent category
+      responses:
+        "201":
+          description: Parent category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /categories/parent/{parentCategoryId}:
+    get:
+      tags: [categories]
+      summary: Get a single parent category by ID
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved parent category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  parentCategory:
+                    $ref: "#/components/schemas/ParentCategory"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      tags: [categories]
+      summary: Update a parent category by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Parent category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags: [categories]
+      summary: Delete a parent category by ID (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Parent category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /categories/parent/{parentCategoryId}/child:
+    get:
+      tags: [categories]
+      summary: Get all child categories of a parent category
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of categories to return per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+        - name: sort
+          in: query
+          required: false
+          description: Sort products by a specific field. Use '-' prefix for descending order. Allowed values: name, updatedAt, updatedAt. (comma-separated for multiple values)
+          schema:
+            type: string
+            default: createdAt
+        - name: name
+          in: query
+          required: false
+          description: Filter categories by name
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved Child categories
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ChildCategories:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ChildCategory"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags: [categories]
+      summary: Create a new child category under a parent category (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+              properties:
+                name:
+                  type: string
+                  description: The name of the child category
+                description:
+                  type: string
+                  description: A brief description of the child category
+                image:
+                  type: string
+                  format: binary
+                  description: The image file for the child category
+      responses:
+        "201":
+          description: Child category created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /categories/parent/{parentCategoryId}/child/{childCategoryId}:
+    get:
+      tags: [categories]
+      summary: Get a single child category by ID
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category
+          schema:
+            type: string
+        - name: childCategoryId
+          in: path
+          required: true
+          description: ID of the child category to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved child category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  childCategory:
+                    $ref: "#/components/schemas/ChildCategory"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      tags: [categories]
+      summary: Update a child category by ID (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category
+          schema:
+            type: string
+        - name: childCategoryId
+          in: path
+          required: true
+          description: ID of the child category to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Child category updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags: [categories]
+      summary: Delete a child category by ID (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: parentCategoryId
+          in: path
+          required: true
+          description: ID of the parent category
+          schema:
+            type: string
+        - name: childCategoryId
+          in: path
+          required: true
+          description: ID of the child category to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Child category deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /carts:
+    get:
+      tags: [carts]
+      summary: Get all carts (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of carts to return per page
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            example: 1
+        - name: minAmount
+          in: query
+          required: false
+          description: Filter carts with a minimum total amount
+          schema:
+            type: number
+            example: 50.00
+        - name: maxAmount
+          in: query
+          required: false
+          description: Filter carts with a maximum total amount
+          schema:
+            type: number
+            example: 200.00
+        - name: minTotalProducts
+          in: query
+          required: false
+          description: Filter carts with a minimum total number of products
+          schema:
+            type: integer
+            example: 2
+        - name: maxTotalProducts
+          in: query
+          required: false
+          description: Filter carts with a maximum total number of products
+          schema:
+            type: integer
+            example: 10
+        - name: minTotalItems
+          in: query
+          required: false
+          description: Filter carts with a minimum total number of items
+          schema:
+            type: integer
+            example: 5
+        - name: maxTotalItems
+          in: query
+          required: false
+          description: Filter carts with a maximum total number of items
+          schema:
+            type: integer
+            example: 15
+        - name: sort
+          in: query
+          required: false
+          description: Sort products by a specific field. Use '-' prefix for descending order. Allowed values: amount, totalProducts, totalItems, updatedAt, updatedAt. (comma-separated for multiple values)
+          schema:
+            type: string
+            default: createdAt
+
+      responses:
+        "200":
+          description: Successfully retrieved carts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  carts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CartSummary"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /carts/{cartId}:
+    get:
+      tags: [carts]
+      summary: Get a cart by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved cart
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cart:
+                    $ref: "#/components/schemas/Cart"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /carts/{cartId}/items:
+    get:
+      tags: [carts]
+      summary: Get items in a cart
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of items to return per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Successfully retrieved cart items
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/CartItem"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags: [carts]
+      summary: Add an item to the cart
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - sku
+              properties:
+                productId:
+                  type: string
+                sku:
+                  type: string
+                quantity:
+                  type: integer
+                  default: 1
+      responses:
+        "201":
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags: [carts]
+      summary: Remove all items from the cart
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart to clear
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cart cleared successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /carts/{cartId}/items/{itemId}:
+    get:
+      tags: [carts]
+      summary: Get a specific item in the cart
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          description: ID of the item
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved cart item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  item:
+                    $ref: "#/components/schemas/CartItem"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    patch:
+      tags: [carts]
+      summary: Update an item in the cart
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          description: ID of the item to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - quantity
+              properties:
+                quantity:
+                  type: integer
+      responses:
+        "200":
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags: [carts]
+      summary: Delete an item from the cart
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: cartId
+          in: path
+          required: true
+          description: ID of the cart
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          description: ID of the item to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Cart item deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /wishlists:
+    get:
+      tags: [wishlist]
+      summary: Get all wishlists (Admin only)
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          description: Number of wishlists to return per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Successfully retrieved wishlists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wishlists:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Wishlist"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /wishlists/{wishlistId}:
+    get:
+      tags: [wishlist]
+      summary: Get a wishlist by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: wishlistId
+          in: path
+          required: true
+          description: ID of the wishlist to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved wishlist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wishlist:
+                    $ref: "#/components/schemas/Wishlist"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags: [wishlist]
+      summary: Create a new wishlist item
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: wishlistId
+          in: path
+          required: true
+          description: ID of the wishlist to add an item to
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - sku
+              properties:
+                productId:
+                  type: string
+                sku:
+                  type: string
+      responses:
+        "201":
+          description: Item added to wishlist successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+
+    delete:
+      tags: [wishlist]
+      summary: Delete an item from a wishlist
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: wishlistId
+          in: path
+          required: true
+          description: ID of the wishlist to delete an item from
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sku:
+                  type: string
+      responses:
+        "200":
+          description: Item deleted from wishlist successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /wishlists/{wishlistId}/clear:
+    delete:
+      tags: [wishlist]
+      summary: Clear a wishlist
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: wishlistId
+          in: path
+          required: true
+          description: ID of the wishlist to clear
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Wishlist cleared successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /products:
+    get:
+      tags: [products]
+      summary: Get all products
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of products to return per page (e.g., 10).
+          schema:
+            type: integer
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve (e.g., 1).
+          schema:
+            type: integer
+        - name: sort
+          in: query
+          required: false
+          description: Sort products by a specific field. Use '-' prefix for descending order. Allowed values: createdAt, updatedAt, rating, numOfReviews, price, discount, popularity, bestSelling, stockAvailability, featured, name (e.g., "createdAt,-price").
+          schema:
+            type: string
+        - name: color
+          in: query
+          required: false
+          description: Filter products by color (comma-separated values, e.g., "red,blue").
+          schema:
+            type: string
+        - name: brand
+          in: query
+          required: false
+          description: Filter products by brand (comma-separated values, e.g., "Nike,Adidas").
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          description: Search products by name (partial matches allowed, e.g., "smartphone").
+          schema:
+            type: string
+        - name: sellerId
+          in: query
+          required: false
+          description: Filter products by seller ID (e.g., "60d5ec49f1b2c8b1f8e4e1a2").
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          required: false
+          description: Filter products by category ID (e.g., "60d5ec49f1b2c8b1f8e4e1a3").
+          schema:
+            type: string
+        - name: parentCategoryId
+          in: query
+          required: false
+          description: Filter products by parent category ID (e.g., "60d5ec49f1b2c8b1f8e4e1a4").
+          schema:
+            type: string
+        - name: lowestPrice
+          in: query
+          required: false
+          description: Filter products with a sale price greater than or equal to the specified value (e.g., "100").
+          schema:
+            type: string
+        - name: highestPrice
+          in: query
+          required: false
+          description: Filter products with a sale price less than or equal to the specified value (e.g., "500").
+          schema:
+            type: string
+        - name: ramSize
+          in: query
+          required: false
+          description: Filter products by RAM size (in GB, e.g., 8).
+          schema:
+            type: integer
+        - name: graphics
+          in: query
+          required: false
+          description: Filter products by graphics processor (e.g., "NVIDIA GTX 1650").
+          schema:
+            type: string
+        - name: processor
+          in: query
+          required: false
+          description: Filter products by processor type (e.g., "Intel i5").
+          schema:
+            type: string
+        - name: cpuSpeed
+          in: query
+          required: false
+          description: Filter products by CPU speed (in GHz, e.g., 2.5).
+          schema:
+            type: number
+        - name: cpuManufacturer
+          in: query
+          required: false
+          description: Filter products by CPU manufacturer (e.g., "Intel").
+          schema:
+            type: string
+        - name: graphicsProcessorManufacturer
+          in: query
+          required: false
+          description: Filter products by graphics processor manufacturer (e.g., "NVIDIA").
+          schema:
+            type: string
+        - name: screenSize
+          in: query
+          required: false
+          description: Filter products by screen size (in inches, e.g., 15.6).
+          schema:
+            type: number
+        - name: resolution
+          in: query
+          required: false
+          description: Filter products by display resolution (e.g., "1920x1080").
+          schema:
+            type: string
+        - name: storage
+          in: query
+          required: false
+          description: Filter products by storage capacity (in GB, e.g., 512).
+          schema:
+            type: integer
+        - name: memory
+          in: query
+          required: false
+          description: Filter products by memory capacity (in GB, e.g., 16).
+          schema:
+            type: integer
+        - name: cameraResolution
+          in: query
+          required: false
+          description: Filter products by camera resolution (in megapixels, e.g., 12).
+          schema:
+            type: number
+        - name: operatingSystem
+          in: query
+          required: false
+          description: Filter products by operating system (e.g., "Windows 10").
+          schema:
+            type: string
+        - name: audioOutput
+          in: query
+          required: false
+          description: Filter products by audio output specifications (e.g., "Stereo").
+          schema:
+            type: string
+        - name: connectivity
+          in: query
+          required: false
+          description: Filter products by connectivity options (e.g., "WiFi,Bluetooth").
+          schema:
+            type: string
+        - name: batteryLife
+          in: query
+          required: false
+          description: Filter products by battery life (in hours, e.g., 10).
+          schema:
+            type: number
+        - name: weight
+          in: query
+          required: false
+          description: Filter products by weight (in Kg, e.g., 1.5).
+          schema:
+            type: number
+        - name: sensor
+          in: query
+          required: false
+          description: Filter products by included sensors (e.g., "Accelerometer,Gyroscope").
+          schema:
+            type: string
+        - name: waterResistance
+          in: query
+          required: false
+          description: Filter products by water resistance capability (true/false, e.g., true).
+          schema:
+            type: boolean
+        - name: fitnessTracking
+          in: query
+          required: false
+          description: Filter products by fitness tracking feature availability (true/false, e.g., true).
+          schema:
+            type: boolean
+        - name: sleepTracking
+          in: query
+          required: false
+          description: Filter products by sleep tracking feature availability (true/false, e.g., false).
+          schema:
+            type: boolean
+        - name: compatiblePlatform
+          in: query
+          required: false
+          description: Filter products by compatible platforms (e.g., "iOS,Android").
+          schema:
+            type: string
+        - name: voiceControl
+          in: query
+          required: false
+          description: Filter products by voice control feature availability (true/false, e.g., true).
+          schema:
+            type: boolean
+        - name: energyEfficiency
+          in: query
+          required: false
+          description: Filter products by energy efficiency certification (e.g., "A++").
+          schema:
+            type: string
+        - name: remoteControl
+          in: query
+          required: false
+          description: Filter products by remote control capability (true/false, e.g., true).
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Successfully retrieved products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductSummary"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags: [products]
+      summary: Create a new product
+      security:
+        - sessionAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - description
+                - brand
+                - categoryId
+                - parentCategoryId
+                - color
+                - variants
+                - specifications
+              properties:
+                name:
+                  type: string
+                  example: "Asus Gaming Laptop"
+                description:
+                  type: string
+                  example: "A high-performance gaming laptop with advanced graphics."
+                brand:
+                  type: string
+                  example: "Asus"
+                color:
+                  type: string
+                  example: "Black"
+                categoryId:
+                  type: string
+                  example: "60d5ec49f1b2c8b1f8e4e1a3"
+                parentCategoryId:
+                  type: string
+                  example: "60d5ec49f1b2c8b1f8e4e1a4"
+                variants:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ProductVariant"
+                specifications:
+                  $ref: "#/components/schemas/ProductSpecification"
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The image files for the product (multiple files allowed).
+      responses:
+        "201":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /products/{productId}:
+    get:
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: "#/components/schemas/Product"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    patch:
+      tags: [products]
+      summary: Update a product by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                imagesToDelete:
+                  type: array
+                  items:
+                    type: string
+                reorderedImages:
+                  type: array
+                  items:
+                    type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                brand:
+                  type: string
+                color:
+                  type: string
+                categoryId:
+                  type: string
+                parentCategoryId:
+                  type: string
+                variants:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/ProductVariant"
+                specifications:
+                  $ref: "#/components/schemas/ProductSpecification"
+                images:
+                  type: string
+                  format: binary
+                  description: The image file for the product
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags: [products]
+      summary: Delete a product by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /products/{productId}/reviews:
+    get:
+      tags: [reviews]
+      summary: Get all reviews for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to retrieve reviews for
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          description: Number of reviews to return per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Successfully retrieved reviews
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reviews:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Review"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags: [reviews]
+      summary: Create a new review for a product
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product to create a review for
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  description: Rating for the product (1-5)
+                comment:
+                  type: string
+                  description: Review comment
+      responses:
+        "201":
+          description: Review created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /products/{productId}/reviews/{reviewId}:
+    get:
+      tags: [reviews]
+      summary: Get a review by ID
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+        - name: reviewId
+          in: path
+          required: true
+          description: ID of the review to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved review
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  review:
+                    $ref: "#/components/schemas/Review"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    patch:
+      tags: [reviews]
+      summary: Update a review by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+        - name: reviewId
+          in: path
+          required: true
+          description: ID of the review to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  description: Updated rating for the product (1-5)
+                comment:
+                  type: string
+                  description: Updated review comment
+      responses:
+        "200":
+          description: Review updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    delete:
+      tags: [reviews]
+      summary: Delete a review by ID
+      security:
+        - sessionAuth: []
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+        - name: reviewId
+          in: path
+          required: true
+          description: ID of the review to delete
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Review deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /live-search:
+    get:
+      tags: [special products]
+      summary: Search for products based on a query
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: The search query (at least 2 characters)
+          schema:
+            type: string
+        - name: parentCategoryId
+          in: query
+          required: false
+          description: Filter by parent category ID
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of products to return (default is 10)
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: Successfully retrieved products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        name:
+                          type: string
+                        description:
+                          type: string
+                        price:
+                          type: number
+                        score:
+                          type: number
+                        highlights:
+                          type: object
+                          additionalProperties:
+                            type: string
+        "400":
+          description: Bad request, query must be at least 2 characters long
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /product-filters:
+    get:
+      tags: [special products]
+      summary: Retrieve product filters
+      description: This endpoint retrieves available filters for products based on the specified parent category and optional category ID.
+      parameters:
+        - name: parentCategoryId
+          in: query
+          required: true
+          description: The ID of the parent category.
+          schema:
+            type: string
+        - name: categoryId
+          in: query
+          required: false
+          description: The ID of the category (optional).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of product filters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  filters:
+                    type: object
+                    properties:
+                      priceRange:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            highestPrice:
+                              type: number
+                              format: float
+                            lowestPrice:
+                              type: number
+                              format: float
+                      specifications:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                            filters:
+                              type: array
+                              items:
+                                type: string
+        '400':
+          description: Bad request, query must be at least 2 characters long
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+
+  /recommended-products:
+    get:
+      tags: [special products]
+      summary: Get recommended products
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          description: Filter by category ID
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of recommended products to return
+          schema:
+            type: integer
+            default: 10
+        - name: excludeProductId
+          in: query
+          required: false
+          description: Exclude a specific product ID from recommendations
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved recommended products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendedProducts:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProductSummary"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /best-offers:
+    get:
+      tags: [special products]
+      summary: Get best offers for products grouped by parent categories
+      responses:
+        "200":
+          description: Successfully retrieved categories with best offers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categoriesWithBestOffers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        parentCategory:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                            name:
+                              type: string
+                        products:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/ProductSummary"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /best-seller:
+    get:
+      tags: [special products]
+      summary: Get best sellers for products grouped by parent categories
+      responses:
+        "200":
+          description: Successfully retrieved categories with best sellers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categoriesWithBestSellers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        parentCategory:
+                          type: object
+                          properties:
+                            _id:
+                              type: string
+                            name:
+                              type: string
+                        products:
+                          type: array
+                          items:
+                            $ref: "#/components/schemas/ProductSummary"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /payment/checkout:
+    post:
+      tags: [payment]
+      summary: Stripe checkout
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: Checkout session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: URL to redirect for payment
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /orders:
+    get:
+      tags: [orders]
+      summary: Get all orders (Admin only)
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: Filter orders by user ID
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Number of orders to return per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Successfully retrieved orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /orders/buyer/connect:
+    get:
+      tags: [orders]
+      summary: Get orders for the authenticated buyer
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Number of orders to return per page
+          schema:
+            type: integer
+            default: 10
+        - name: page
+          in: query
+          required: false
+          description: Page number to retrieve
+          schema:
+            type: integer
+            default: 1
+      responses:
+        "200":
+          description: Successfully retrieved buyer orders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /orders/{orderId}:
+    get:
+      tags: [orders]
+      summary: Get order by ID
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: ID of the order to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successfully retrieved order
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: "#/components/schemas/Order"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: sessionId
+
+  schemas:
+    Message:
+      type: object
+      properties:
+        message:
+          type: string
+
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+        isVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        profile:
+          $ref: "#/components/schemas/Profile"
+
+    Profile:
+      type: object
+      properties:
+        _id:
+          type: string
+        givenName:
+          type: string
+        familyName:
+          type: string
+        fullName:
+          type: string
+        userId:
+          type: string
+        phone:
+          type: string
+        contactEmail:
+          type: string
+        contactPhone:
+          type: string
+        contactWebsite:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        description:
+          type: string
+
+    Departments:
+      type: array
+      items:
+        type: object
+        properties:
+          _id:
+            type: string
+          name:
+            type: string
+          childCategories:
+            type: array
+            items:
+              type: object
+              properties:
+                _id:
+                  type: string
+                name:
+                  type: string
+
+    ParentCategory:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        image:
+          type: object
+          properties:
+            tiny:
+              type: string
+            medium:
+              type: string
+            large:
+              type: string
+            publicId:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ChildCategory:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        parentCategoryId:
+          type: string
+        parentCategory:
+          $ref: "#/components/schemas/ParentCategory"
+        image:
+          type: object
+          properties:
+            tiny:
+              type: string
+            medium:
+              type: string
+            large:
+              type: string
+            publicId:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CartSummary:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        totalProducts:
+          type: integer
+        totalItems:
+          type: integer
+        amount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Cart:
+      type: object
+      properties:
+        cartId:
+          type: string
+        userId:
+          type: string
+        itemsCount:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CartItem"
+
+    CartItem:
+      type: object
+      properties:
+        cartId:
+          type: string
+        productId:
+          type: string
+        productName:
+          type: string
+        quantity:
+          type: integer
+        itemId:
+          type: string
+        image:
+          type: string
+        sellerId:
+          type: string
+        variant:
+          $ref: "#/components/schemas/ProductVariant"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    
+    Wishlist:
+      type: object
+      properties:
+        userId:
+          type: string
+        itemsCount:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/WishlistItem"
+
+    WishlistItem:
+      type: object
+      properties:
+        wishlistId:
+          type: string
+        productId:
+          type: string
+        productName:
+          type: string
+        image:
+          type: string
+        sellerId:
+          type: string
+        variant:
+          $ref: "#/components/schemas/ProductVariant"
+
+    ProductSummary:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        color:
+          type: string
+        image:
+          type: string
+        reviews:
+          type: object
+          properties:
+            averageRating:
+              type: number
+            rawAverageRating:
+              type: number
+            numOfReviews:
+              type: integer
+        isFeatured:
+          type: boolean
+        variant:
+            $ref: "#/components/schemas/ProductVariant"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        brand:
+          type: string
+        color:
+          type: string
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              publicId:
+                type: string
+              tiny:
+                type: string
+              medium:
+                type: string
+              large:
+                type: string
+        reviews:
+          type: object
+          properties:
+            averageRating:
+              type: number
+            rawAverageRating:
+              type: number
+            numOfReviews:
+              type: integer
+        categoryId:
+          type: string
+        parentCategoryId:
+          type: string
+        sellerId:
+          type: string
+        popularity:
+          type: number
+        salesCount:
+          type: number
+        isFeatured:
+          type: boolean
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductVariant"
+        specifications:
+          $ref: "#/components/schemas/ProductSpecification"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProductVariant:
+      type: object
+      properties:
+        _id:
+          type: string
+        variation:
+          type: string
+        sku:
+          type: string
+        inventory:
+          type: integer
+        globalPrice:
+          type: number
+        salePrice:
+          type: number
+        discountPercent:
+          type: number
+        saleStartDate:
+          type: string
+          format: date-time
+        saleEndDate:
+          type: string
+          format: date-time
+
+    ProductSpecification:
+      type: object
+      properties:
+        certifications:
+          type: string
+        ramSize:
+          type: integer
+        graphics:
+          type: string
+        processor:
+          type: string
+        cpuSpeed:
+          type: number
+        cpuManufacturer:
+          type: string
+        graphicsProcessorManufacturer:
+          type: string
+        screenSize:
+          type: number
+        resolution:
+          type: string
+        storage:
+          type: integer
+        memory:
+          type: integer
+        cameraResolution:
+          type: number
+        operatingSystem:
+          type: string
+        audioOutput:
+          type: string
+        connectivity:
+          type: string
+        batteryLife:
+          type: number
+        weight:
+          type: number
+        sensor:
+          type: string
+        waterResistance:
+          type: boolean
+        fitnessTracking:
+          type: boolean
+        sleepTracking:
+          type: boolean
+        compatiblePlatform:
+          type: string
+        voiceControl:
+          type: boolean
+        energyEfficiency:
+          type: string
+        remoteControl:
+          type: boolean
+
+    Pagination:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        totalPages:
+          type: integer
+        totalCount:
+          type: integer
+        limit:
+          type: integer
+
+    Review:
+      type: object
+      properties:
+        _id:
+          type: string
+        rating:
+          type: integer
+        comment:
+          type: string
+        userId:
+          type: string
+        productId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        user:
+          type: object
+          properties:
+            userId:
+              type: string
+            familyName:
+              type: string
+            givenName:
+              type: string
+
+    Order:
+      type: object
+      properties:
+        _id:
+          type: string
+        userId:
+          type: string
+        paymentId:
+          type: string
+        orderItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        totalAmount:
+          type: number
+        taxAmount:
+          type: number
+        shippingAmount:
+          type: number
+        discountAmount:
+          type: number
+        orderStatus:
+          type: string
+        paymentMethod:
+          type: string
+        shippingAddress:
+          type: object
+          properties:
+            street:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            country:
+              type: string
+            postalCode:
+              type: string
+        notes:
+          type: string
+        estimatedDeliveryDate:
+          type: string
+          format: date-time
+        actualDeliveryDate:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OrderItem:
+      type: object
+      properties:
+        _id:
+          type: string
+        orderId:
+          type: string
+        productId:
+          type: string
+        sellerId:
+          type: string
+        quantity:
+          type: number
+        salePrice:
+          type: number
+        totalPrice:
+          type: number
+        productName:
+          type: string
+        sku:
+          type: string
+        image:
+          type: string
+        isRefunded:
+          type: boolean
+        refundedQuantity:
+          type: number
+        notes:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequestError:
+      description: Invalid or messing parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              errors:
+                type: object
+                additionalProperties:
+                  type: string
+    UnauthorizedError:
+      description: Access token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Message"
+    ForbiddenError:
+      description: The server understood the request but refuses to authorize it
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Message"
+    NotFoundError:
+      description: The specified resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Message"
+    ConflictError:
+      description: Duplicate Key Error, The Resource Already Exists
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Message"
+    InternalServerError:
+      description: Unexpected error occurred
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Message"
+
