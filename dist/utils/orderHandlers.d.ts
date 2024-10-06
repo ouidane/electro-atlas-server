@@ -1,6 +1,7 @@
 import { Types } from "mongoose";
-declare function createNewPayment(session: any, status: string): Promise<unknown>;
-declare function createNewDelivery(session: any, orderId: any): Promise<import("mongoose").Document<unknown, {}, import("../models/deliveryModel").DeliveryDoc> & import("../models/deliveryModel").DeliveryDoc & Required<{
+import Stripe from "stripe";
+declare function createNewPayment(session: Stripe.Checkout.Session, status: string): Promise<unknown>;
+declare function createNewDelivery(session: Stripe.Checkout.Session, orderId: unknown): Promise<import("mongoose").Document<unknown, {}, import("../models/deliveryModel").DeliveryDoc> & import("../models/deliveryModel").DeliveryDoc & Required<{
     _id: unknown;
 }>>;
 declare function createNewOrder(session: any, paymentId: unknown): Promise<{
@@ -13,22 +14,22 @@ declare function createNewOrder(session: any, paymentId: unknown): Promise<{
         totalPrice: number;
         productName: string;
         sku: string;
-        image: string;
+        image: string | undefined;
     }[];
     _id: unknown;
     __v?: any;
     $locals: Record<string, unknown>;
     $model: {
-        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & Required<{
-            _id: unknown;
-        }>, any>>(name: string): ModelType;
+        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & {
+            _id: Types.ObjectId;
+        }, any>>(name: string): ModelType;
         <ModelType = import("mongoose").Model<import("../models/orderModel").OrderDoc, {}, {}, {}, import("mongoose").Document<unknown, {}, import("../models/orderModel").OrderDoc> & import("../models/orderModel").OrderDoc & Required<{
             _id: unknown;
         }>, any>>(): ModelType;
     } & {
-        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & Required<{
-            _id: unknown;
-        }>, any>>(name: string): ModelType;
+        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & {
+            _id: Types.ObjectId;
+        }, any>>(name: string): ModelType;
         <ModelType = import("mongoose").Model<any, {}, {}, {}, any, any>>(): ModelType;
     };
     $op: "save" | "validate" | "remove" | null;
@@ -77,14 +78,14 @@ declare function createNewOrder(session: any, paymentId: unknown): Promise<{
         (path: string): boolean;
     };
     isModified: {
-        <T extends keyof import("../models/orderModel").OrderDoc>(path?: T | T[], options?: {
+        <T extends keyof import("../models/orderModel").OrderDoc>(path?: T | T[] | undefined, options?: {
             ignoreAtomics?: boolean;
         } | null): boolean;
         (path?: string | Array<string>, options?: {
             ignoreAtomics?: boolean;
         } | null): boolean;
     } & {
-        <T extends string | number | symbol>(path?: T | T[], options?: {
+        <T extends string | number | symbol>(path?: T | T[] | undefined, options?: {
             ignoreAtomics?: boolean;
         } | null): boolean;
         (path?: string | Array<string>, options?: {
@@ -107,16 +108,16 @@ declare function createNewOrder(session: any, paymentId: unknown): Promise<{
         (path: string, scope?: any): void;
     };
     model: {
-        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & Required<{
-            _id: unknown;
-        }>, any>>(name: string): ModelType;
+        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & {
+            _id: Types.ObjectId;
+        }, any>>(name: string): ModelType;
         <ModelType = import("mongoose").Model<import("../models/orderModel").OrderDoc, {}, {}, {}, import("mongoose").Document<unknown, {}, import("../models/orderModel").OrderDoc> & import("../models/orderModel").OrderDoc & Required<{
             _id: unknown;
         }>, any>>(): ModelType;
     } & {
-        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & Required<{
-            _id: unknown;
-        }>, any>>(name: string): ModelType;
+        <ModelType = import("mongoose").Model<unknown, {}, {}, {}, import("mongoose").Document<unknown, {}, unknown> & {
+            _id: Types.ObjectId;
+        }, any>>(name: string): ModelType;
         <ModelType = import("mongoose").Model<any, {}, {}, {}, any, any>>(): ModelType;
     };
     schema: import("mongoose").Schema;
@@ -177,13 +178,13 @@ declare function createNewOrder(session: any, paymentId: unknown): Promise<{
         (path: string): void;
     };
     validate: {
-        <T extends keyof import("../models/orderModel").OrderDoc>(pathsToValidate?: T | T[], options?: import("mongoose").AnyObject): Promise<void>;
+        <T extends keyof import("../models/orderModel").OrderDoc>(pathsToValidate?: T | T[] | undefined, options?: import("mongoose").AnyObject): Promise<void>;
         (pathsToValidate?: import("mongoose").pathsToValidate, options?: import("mongoose").AnyObject): Promise<void>;
         (options: {
             pathsToSkip?: import("mongoose").pathsToSkip;
         }): Promise<void>;
     } & {
-        <T extends string | number | symbol>(pathsToValidate?: T | T[], options?: import("mongoose").AnyObject): Promise<void>;
+        <T extends string | number | symbol>(pathsToValidate?: T | T[] | undefined, options?: import("mongoose").AnyObject): Promise<void>;
         (pathsToValidate?: import("mongoose").pathsToValidate, options?: import("mongoose").AnyObject): Promise<void>;
         (options: {
             pathsToSkip?: import("mongoose").pathsToSkip;
@@ -194,14 +195,14 @@ declare function createNewOrder(session: any, paymentId: unknown): Promise<{
             pathsToSkip?: import("mongoose").pathsToSkip;
             [k: string]: any;
         }): import("mongoose").Error.ValidationError | null;
-        <T extends keyof import("../models/orderModel").OrderDoc>(pathsToValidate?: T | T[], options?: import("mongoose").AnyObject): import("mongoose").Error.ValidationError | null;
+        <T extends keyof import("../models/orderModel").OrderDoc>(pathsToValidate?: T | T[] | undefined, options?: import("mongoose").AnyObject): import("mongoose").Error.ValidationError | null;
         (pathsToValidate?: import("mongoose").pathsToValidate, options?: import("mongoose").AnyObject): import("mongoose").Error.ValidationError | null;
     } & {
         (options: {
             pathsToSkip?: import("mongoose").pathsToSkip;
             [k: string]: any;
         }): import("mongoose").Error.ValidationError | null;
-        <T extends string | number | symbol>(pathsToValidate?: T | T[], options?: import("mongoose").AnyObject): import("mongoose").Error.ValidationError | null;
+        <T extends string | number | symbol>(pathsToValidate?: T | T[] | undefined, options?: import("mongoose").AnyObject): import("mongoose").Error.ValidationError | null;
         (pathsToValidate?: import("mongoose").pathsToValidate, options?: import("mongoose").AnyObject): import("mongoose").Error.ValidationError | null;
     };
     userId: Types.ObjectId;

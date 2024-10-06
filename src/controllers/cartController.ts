@@ -49,7 +49,7 @@ const getCarts = async (req: Request, res: Response, next: NextFunction) => {
     totalProducts: "totalProducts",
     totalItems: "totalItems",
   };
-  const sortOptions = buildSortOption(sort, AllowedSortFields);
+  const sortOptions = buildSortOption(sort as string, AllowedSortFields);
 
   // Fetch carts with pagination and sorting
   const carts = await Cart.find(query)

@@ -47,8 +47,8 @@ const getCurrentUser = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const wishlist = yield models_1.Wishlist.findOne({ userId }).lean();
     res.status(200).json({
         user,
-        cartId: cart._id || null,
-        wishlistId: wishlist._id || null,
+        cartId: (cart === null || cart === void 0 ? void 0 : cart._id) || null,
+        wishlistId: (wishlist === null || wishlist === void 0 ? void 0 : wishlist._id) || null,
     });
 });
 exports.getCurrentUser = getCurrentUser;
@@ -60,6 +60,7 @@ const updateCurrentUser = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     let profile = yield models_1.Profile.findOne({ userId });
     if (!profile) {
         profile = new models_1.Profile({});
+        profile.userId = userId;
     }
     profile.familyName = familyName;
     profile.givenName = givenName;

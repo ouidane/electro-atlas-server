@@ -92,11 +92,9 @@ exports.default = (passport) => {
     }));
     // Google Strategies ============================================
     passport.use("google-marketplace", createGoogleStrategy(constants_1.PLATFORMS.MARKETPLACE, process.env.GOOGLE_MARKETPLACE_CLIENT_ID, process.env.GOOGLE_MARKETPLACE_CLIENT_SECRET, "/api/auth/google/marketplace/callback"));
-    passport.use("google-delivery", createGoogleStrategy(constants_1.PLATFORMS.DELIVERY, process.env.GOOGLE_DELIVERY_CLIENT_ID, process.env.GOOGLE_DELIVERY_CLIENT_SECRET, "/api/auth/google/delivery/callback"));
     passport.use("google-vendor", createGoogleStrategy(constants_1.PLATFORMS.VENDOR, process.env.GOOGLE_VENDOR_CLIENT_ID, process.env.GOOGLE_VENDOR_CLIENT_SECRET, "/api/auth/google/vendor/callback"));
     // Local Strategies ======================================================
     passport.use("local-marketplace", createLocalStrategy(constants_1.PLATFORMS.MARKETPLACE));
-    passport.use("local-delivery", createLocalStrategy(constants_1.PLATFORMS.DELIVERY));
     passport.use("local-vendor", createLocalStrategy(constants_1.PLATFORMS.VENDOR));
 };
 //# sourceMappingURL=passport.js.map

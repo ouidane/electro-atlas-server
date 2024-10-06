@@ -1,51 +1,51 @@
-import { Review, Product, Profile, User } from "../models";
+// import { Review, Product, Profile, User } from "../models";
 
-// Shuffle array to ensure uniqueness
-function shuffleArray(array: any[]): any[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-}
+// // Shuffle array to ensure uniqueness
+// function shuffleArray(array: any[]): any[] {
+//   for (let i = array.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [array[i], array[j]] = [array[j], array[i]];
+//   }
+//   return array;
+// }
 
-// Randomly assign unique bookIds
-export const assignUniqueBookIds = async () => {
-  const allProducts = await Product.aggregate([
-    {
-      $lookup: {
-        from: "reviews",
-        localField: "_id",
-        foreignField: "productId",
-        as: "allReviews",
-      },
-    },
-  ]);
+// // Randomly assign unique bookIds
+// export const assignUniqueBookIds = async () => {
+//   const allProducts = await Product.aggregate([
+//     {
+//       $lookup: {
+//         from: "reviews",
+//         localField: "_id",
+//         foreignField: "productId",
+//         as: "allReviews",
+//       },
+//     },
+//   ]);
 
-  const allBuyer = await Profile.find({ role: "buyer" }).lean();
+//   const allBuyer = await Profile.find({ role: "buyer" }).lean();
 
-  let shuffledIds = shuffleArray([...allBuyer]); // Clone and shuffle the newIds array
-  let idIndex = 0; // Track the index of newIds
+//   let shuffledIds = shuffleArray([...allBuyer]); // Clone and shuffle the newIds array
+//   let idIndex = 0; // Track the index of newIds
 
-  allProducts.forEach((product) => {
-    if (product.allReviews && product.allReviews.length > 0) {
-      // Assign unique bookIds
-      product.allReviews.forEach(async (rev) => {
-        // Reset index if we've used all newIds (to allow reuse)
-        if (idIndex >= shuffledIds.length) {
-          shuffledIds = shuffleArray([...allBuyer]); // Reshuffle if necessary
-          idIndex = 0;
-        }
+//   allProducts.forEach((product) => {
+//     if (product.allReviews && product.allReviews.length > 0) {
+//       // Assign unique bookIds
+//       product.allReviews.forEach(async (rev) => {
+//         // Reset index if we've used all newIds (to allow reuse)
+//         if (idIndex >= shuffledIds.length) {
+//           shuffledIds = shuffleArray([...allBuyer]); // Reshuffle if necessary
+//           idIndex = 0;
+//         }
 
-        await Review.findByIdAndUpdate(rev._id, {
-          userId: shuffledIds[idIndex++].userId,
-        });
-      });
-    }
-  });
-};
+//         await Review.findByIdAndUpdate(rev._id, {
+//           userId: shuffledIds[idIndex++].userId,
+//         });
+//       });
+//     }
+//   });
+// };
 
-export async function migrateNames() {
+// export async function migrateNames() {
   // await Profile.updateMany({}, [
   //   {
   //     $set: {
@@ -69,7 +69,7 @@ export async function migrateNames() {
   //     },
   //   },
   // ]);
-}
+// }
 
 // import { Document, Schema, model, Types, Model } from "mongoose";
 
@@ -349,28 +349,28 @@ export async function migrateNames() {
 
 // export default Product;
 
-function generateRandomPostalCode() {
-  return Math.floor(1 + Math.random() * 30)
-}
+// function generateRandomPostalCode() {
+//   return Math.floor(1 + Math.random() * 30)
+// }
 
-export async function migrateProfiles() {
-  try {
-    const products: any = await Product.find({}).lean();
+// export async function migrateProfiles() {
+//   try {
+//     const products: any = await Product.find({}).lean();
 
-    for (const product of products) {
-      const variants = product.variants.map(variant => {
-        return {...variant, inventory : generateRandomPostalCode(),}
-      })
+//     for (const product of products) {
+//       const variants = product.variants.map(variant => {
+//         return {...variant, inventory : generateRandomPostalCode(),}
+//       })
       
-      await Product.findOneAndUpdate(
-        { _id: product._id },
-        { variants: variants }
-      )
+//       await Product.findOneAndUpdate(
+//         { _id: product._id },
+//         { variants: variants }
+//       )
       
-    }
+//     }
 
-    console.log('Migration completed successfully');
-  } catch (error) {
-    console.error('Migration failed:', error);
-  }
-}
+//     console.log('Migration completed successfully');
+//   } catch (error) {
+//     console.error('Migration failed:', error);
+//   }
+// }

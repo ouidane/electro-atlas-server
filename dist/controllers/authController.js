@@ -144,7 +144,8 @@ const verifyEmail = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return next((0, http_errors_1.default)(404, "User not found"));
     }
     const hashedToken = (0, emailVerificationToken_1.validateEmailVerificationToken)(user.verificationToken);
-    if (verificationCode !== hashedToken.verificationCode ||
+    if (!hashedToken ||
+        verificationCode !== hashedToken.verificationCode ||
         user.verificationTokenExpirationDate < new Date()) {
         return next((0, http_errors_1.default)(401, "Verification Failed"));
     }

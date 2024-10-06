@@ -111,8 +111,8 @@ UserSchema.pre("save", async function (next) {
       const hashedPassword = await bcrypt.hash(this.password, 12);
       this.password = hashedPassword;
       this.confirmPassword = undefined;
-    } catch (error) {
-      return next(error);
+    } catch (err: any) {
+      return next(err);
     }
   }
   next();
@@ -137,8 +137,8 @@ UserSchema.pre(
       await Cart.deleteOne({ userId: this._id });
       await Wishlist.deleteOne({ userId: this._id });
       next();
-    } catch (error) {
-      next(error);
+    } catch (err: any) {
+      next(err);
     }
   }
 );

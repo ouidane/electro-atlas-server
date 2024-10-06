@@ -8,9 +8,7 @@ import {
   createStripeCustomer,
   stripeEvent,
 } from "../utils/stripe";
-import {
-  handleCheckoutSessionCompleted,
-} from "../utils/stripeCheckoutHandlers";
+import { handleCheckoutSessionCompleted } from "../utils/stripeCheckoutHandlers";
 import { checkStock } from "../utils/handlers";
 import StockUnavailableError from "../errors/stock-unavailable";
 
@@ -22,7 +20,7 @@ const createStripeCheckout = async (
 ) => {
   const userId = req.user.id;
 
-  const profile = await Profile.findOne({userId})
+  const profile = await Profile.findOne({ userId })
     .select("familyName givenName userId address phone")
     .lean();
   if (!profile || !profile.address) {
@@ -30,7 +28,7 @@ const createStripeCheckout = async (
   }
 
   const cart = await Cart.findOne({ userId });
-  const cartItems = await CartItem.getFormattedCartItems(cart._id);
+  const cartItems = await CartItem.getFormattedCartItems(cart!._id);
   if (!cartItems || cartItems.length === 0) {
     return next(createError(404, "Cart is empty"));
   }
@@ -47,7 +45,7 @@ const createStripeCheckout = async (
   const session = await createCheckoutSession(
     profile,
     customer,
-    cart._id,
+    cart!._id,
     cartItems
   );
 
@@ -69,8 +67,8 @@ const stripeWebhook = async (req: Request, res: Response) => {
     }
 
     res.json({ received: true });
-  } catch (error) {
-    return res.status(400).send(`Webhook Error: ${error.message}`);
+  } catch (err: any) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
   }
 };
 

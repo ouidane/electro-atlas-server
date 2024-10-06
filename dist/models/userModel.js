@@ -99,8 +99,8 @@ UserSchema.pre("save", function (next) {
                 this.password = hashedPassword;
                 this.confirmPassword = undefined;
             }
-            catch (error) {
-                return next(error);
+            catch (err) {
+                return next(err);
             }
         }
         next();
@@ -126,8 +126,8 @@ UserSchema.pre("deleteOne", { document: true, query: false }, function (next) {
             yield wishlistModel_1.default.deleteOne({ userId: this._id });
             next();
         }
-        catch (error) {
-            next(error);
+        catch (err) {
+            next(err);
         }
     });
 });

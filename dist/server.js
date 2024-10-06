@@ -35,11 +35,6 @@ const app = (0, express_1.default)();
 // Setup Swagger UI
 app.use("/api-docs", swagger_ui_express_1.default.serve);
 app.get("/api-docs", swagger_ui_express_1.default.setup(swaggerConfig_1.swaggerConfig, swaggerConfig_1.swaggerUiOptions));
-// Serve raw Swagger document
-app.get("/swagger.json", (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.send(swaggerConfig_1.swaggerConfig);
-});
 app.use(rawBodyMiddleware_1.default);
 // app.use(express.json());
 app.use(express_1.default.urlencoded({ extended: true }));

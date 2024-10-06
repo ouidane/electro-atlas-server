@@ -40,8 +40,8 @@ CartSchema.pre("deleteOne", { document: true, query: false }, function (next) {
             yield cartItemModel_1.default.deleteMany({ cartId: this._id });
             next();
         }
-        catch (error) {
-            next(error);
+        catch (err) {
+            next(err);
         }
     });
 });

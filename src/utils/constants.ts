@@ -1,6 +1,5 @@
 export const PLATFORMS = {
   MARKETPLACE: "marketplace",
-  DELIVERY: "delivery",
   VENDOR: "vendor",
 } as const;
 
@@ -12,10 +11,10 @@ export const ROLE = {
   DELIVER: "deliver",
 } as const;
 
-export const platformMap: { [key: string]: string } = {
-  [PLATFORMS.MARKETPLACE]: process.env.MARKETPLACE_URL,
-  [PLATFORMS.DELIVERY]: process.env.DELIVERY_URL,
-  [PLATFORMS.VENDOR]: process.env.VENDOR_URL,
+export const platformMap = {
+  [PLATFORMS.MARKETPLACE]: process.env.MARKETPLACE_URL as string,
+  [PLATFORMS.VENDOR]: process.env.VENDOR_URL as string,
+  server: process.env.SERVER_URL as string,
 } as const;
 
 export const IMAGE_SIZES = {

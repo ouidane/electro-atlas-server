@@ -116,16 +116,6 @@ export default (passport: PassportStatic): void => {
   );
 
   passport.use(
-    "google-delivery",
-    createGoogleStrategy(
-      PLATFORMS.DELIVERY,
-      process.env.GOOGLE_DELIVERY_CLIENT_ID!,
-      process.env.GOOGLE_DELIVERY_CLIENT_SECRET!,
-      "/api/auth/google/delivery/callback"
-    )
-  );
-
-  passport.use(
     "google-vendor",
     createGoogleStrategy(
       PLATFORMS.VENDOR,
@@ -137,6 +127,5 @@ export default (passport: PassportStatic): void => {
 
   // Local Strategies ======================================================
   passport.use("local-marketplace", createLocalStrategy(PLATFORMS.MARKETPLACE));
-  passport.use("local-delivery", createLocalStrategy(PLATFORMS.DELIVERY));
   passport.use("local-vendor", createLocalStrategy(PLATFORMS.VENDOR));
 };

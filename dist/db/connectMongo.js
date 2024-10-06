@@ -16,10 +16,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const logger_1 = require("../utils/logger");
 const mongoDB = (uri) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield mongoose_1.default.connect(uri, {
-            serverSelectionTimeoutMS: 5000, // Adjust the timeout if necessary
-            connectTimeoutMS: 10000 // Adjust the timeout if necessary
-        });
+        yield mongoose_1.default.connect(uri);
         logger_1.logger.info("Connected to MongoDB database");
     }
     catch (err) {

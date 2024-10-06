@@ -1,85 +1,69 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.assignUniqueBookIds = void 0;
-exports.migrateNames = migrateNames;
-exports.migrateProfiles = migrateProfiles;
-const models_1 = require("../models");
-// Shuffle array to ensure uniqueness
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-// Randomly assign unique bookIds
-const assignUniqueBookIds = () => __awaiter(void 0, void 0, void 0, function* () {
-    const allProducts = yield models_1.Product.aggregate([
-        {
-            $lookup: {
-                from: "reviews",
-                localField: "_id",
-                foreignField: "productId",
-                as: "allReviews",
-            },
-        },
-    ]);
-    const allBuyer = yield models_1.Profile.find({ role: "buyer" }).lean();
-    let shuffledIds = shuffleArray([...allBuyer]); // Clone and shuffle the newIds array
-    let idIndex = 0; // Track the index of newIds
-    allProducts.forEach((product) => {
-        if (product.allReviews && product.allReviews.length > 0) {
-            // Assign unique bookIds
-            product.allReviews.forEach((rev) => __awaiter(void 0, void 0, void 0, function* () {
-                // Reset index if we've used all newIds (to allow reuse)
-                if (idIndex >= shuffledIds.length) {
-                    shuffledIds = shuffleArray([...allBuyer]); // Reshuffle if necessary
-                    idIndex = 0;
-                }
-                yield models_1.Review.findByIdAndUpdate(rev._id, {
-                    userId: shuffledIds[idIndex++].userId,
-                });
-            }));
-        }
-    });
-});
-exports.assignUniqueBookIds = assignUniqueBookIds;
-function migrateNames() {
-    return __awaiter(this, void 0, void 0, function* () {
-        // await Profile.updateMany({}, [
-        //   {
-        //     $set: {
-        //       tempName: "$givenName",
-        //     },
-        //   },
-        //   {
-        //     $set: {
-        //       givenName: "$familyName",
-        //       familyName: "$tempName",
-        //     },
-        //   },
-        //   {
-        //     $unset: "tempName",
-        //   },
-        // ]);
-        // await Profile.updateMany({}, [
-        //   {
-        //     $set: {
-        //       fullName: { $concat: ["$givenName", " ", "$familyName"] },
-        //     },
-        //   },
-        // ]);
-    });
-}
+// import { Review, Product, Profile, User } from "../models";
+// // Shuffle array to ensure uniqueness
+// function shuffleArray(array: any[]): any[] {
+//   for (let i = array.length - 1; i > 0; i--) {
+//     const j = Math.floor(Math.random() * (i + 1));
+//     [array[i], array[j]] = [array[j], array[i]];
+//   }
+//   return array;
+// }
+// // Randomly assign unique bookIds
+// export const assignUniqueBookIds = async () => {
+//   const allProducts = await Product.aggregate([
+//     {
+//       $lookup: {
+//         from: "reviews",
+//         localField: "_id",
+//         foreignField: "productId",
+//         as: "allReviews",
+//       },
+//     },
+//   ]);
+//   const allBuyer = await Profile.find({ role: "buyer" }).lean();
+//   let shuffledIds = shuffleArray([...allBuyer]); // Clone and shuffle the newIds array
+//   let idIndex = 0; // Track the index of newIds
+//   allProducts.forEach((product) => {
+//     if (product.allReviews && product.allReviews.length > 0) {
+//       // Assign unique bookIds
+//       product.allReviews.forEach(async (rev) => {
+//         // Reset index if we've used all newIds (to allow reuse)
+//         if (idIndex >= shuffledIds.length) {
+//           shuffledIds = shuffleArray([...allBuyer]); // Reshuffle if necessary
+//           idIndex = 0;
+//         }
+//         await Review.findByIdAndUpdate(rev._id, {
+//           userId: shuffledIds[idIndex++].userId,
+//         });
+//       });
+//     }
+//   });
+// };
+// export async function migrateNames() {
+// await Profile.updateMany({}, [
+//   {
+//     $set: {
+//       tempName: "$givenName",
+//     },
+//   },
+//   {
+//     $set: {
+//       givenName: "$familyName",
+//       familyName: "$tempName",
+//     },
+//   },
+//   {
+//     $unset: "tempName",
+//   },
+// ]);
+// await Profile.updateMany({}, [
+//   {
+//     $set: {
+//       fullName: { $concat: ["$givenName", " ", "$familyName"] },
+//     },
+//   },
+// ]);
+// }
 // import { Document, Schema, model, Types, Model } from "mongoose";
 // // Define the interface for UserInteraction document
 // export interface UserInteractionDoc extends Document {
@@ -333,24 +317,24 @@ function migrateNames() {
 // // Update your Product model export
 // const Product = model<ProductDoc, ProductModel>("Product", ProductSchema);
 // export default Product;
-function generateRandomPostalCode() {
-    return Math.floor(1 + Math.random() * 30);
-}
-function migrateProfiles() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const products = yield models_1.Product.find({}).lean();
-            for (const product of products) {
-                const variants = product.variants.map(variant => {
-                    return Object.assign(Object.assign({}, variant), { inventory: generateRandomPostalCode() });
-                });
-                yield models_1.Product.findOneAndUpdate({ _id: product._id }, { variants: variants });
-            }
-            console.log('Migration completed successfully');
-        }
-        catch (error) {
-            console.error('Migration failed:', error);
-        }
-    });
-}
+// function generateRandomPostalCode() {
+//   return Math.floor(1 + Math.random() * 30)
+// }
+// export async function migrateProfiles() {
+//   try {
+//     const products: any = await Product.find({}).lean();
+//     for (const product of products) {
+//       const variants = product.variants.map(variant => {
+//         return {...variant, inventory : generateRandomPostalCode(),}
+//       })
+//       await Product.findOneAndUpdate(
+//         { _id: product._id },
+//         { variants: variants }
+//       )
+//     }
+//     console.log('Migration completed successfully');
+//   } catch (error) {
+//     console.error('Migration failed:', error);
+//   }
+// }
 //# sourceMappingURL=test.js.map

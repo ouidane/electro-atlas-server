@@ -1,12 +1,16 @@
 import { Types } from "mongoose";
 import { CartItem, Order, Delivery, OrderItem, Payment } from "../models";
 import { DELIVERY_STATUS, ORDER_STATUS, PAYMENT_METHOD } from "./constants";
+import Stripe from "stripe";
 
-async function createNewPayment(session: any, status: string) {
-  const profile = JSON.parse(session.metadata.profile);
+async function createNewPayment(
+  session: Stripe.Checkout.Session,
+  status: string
+) {
+  const profile = JSON.parse(session.metadata!.profile);
 
   const payment = await Payment.create({
-    amountTotal: session.amount_total / 100,
+    amountTotal: session.amount_total! / 100,
     paymentStatus: status,
     paymentMethod: PAYMENT_METHOD.CARD,
     customerId: session.customer,
@@ -17,8 +21,11 @@ async function createNewPayment(session: any, status: string) {
   return payment._id;
 }
 
-async function createNewDelivery(session, orderId) {
-  const profile = JSON.parse(session.metadata.profile);
+async function createNewDelivery(
+  session: Stripe.Checkout.Session,
+  orderId: unknown
+) {
+  const profile = JSON.parse(session.metadata!.profile);
 
   const delivery = await Delivery.create({
     orderId,

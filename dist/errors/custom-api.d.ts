@@ -1,4 +1,4 @@
 declare class CustomAPIError extends Error {
-    constructor(message: any);
+    constructor(message: string);
 }
 export default CustomAPIError;

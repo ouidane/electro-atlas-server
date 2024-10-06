@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CITIES = exports.COUNTRIES = exports.ORDER_STATUS = exports.PAYMENT_METHOD = exports.DELIVERY_STATUS = exports.PAYMENT_STATUS = exports.IMAGE_SIZES = exports.platformMap = exports.ROLE = exports.PLATFORMS = void 0;
 exports.PLATFORMS = {
     MARKETPLACE: "marketplace",
-    DELIVERY: "delivery",
     VENDOR: "vendor",
 };
 exports.ROLE = {
@@ -15,8 +14,8 @@ exports.ROLE = {
 };
 exports.platformMap = {
     [exports.PLATFORMS.MARKETPLACE]: process.env.MARKETPLACE_URL,
-    [exports.PLATFORMS.DELIVERY]: process.env.DELIVERY_URL,
     [exports.PLATFORMS.VENDOR]: process.env.VENDOR_URL,
+    server: process.env.SERVER_URL,
 };
 exports.IMAGE_SIZES = {
     TINY: 200,

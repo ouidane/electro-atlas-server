@@ -1,4 +1,4 @@
-import "express-async-errors";
+require("express-async-errors");
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import connectDB from "./db/connectMongo";
@@ -23,12 +23,6 @@ const app: Express = express();
 // Setup Swagger UI
 app.use("/api-docs", swaggerUi.serve);
 app.get("/api-docs", swaggerUi.setup(swaggerConfig, swaggerUiOptions));
-
-// Serve raw Swagger document
-app.get("/swagger.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.send(swaggerConfig);
-});
 
 app.use(rawBodyMiddleware);
 // app.use(express.json());

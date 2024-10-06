@@ -16,8 +16,12 @@ const addWishlistItemsToDatabase = async (
     if (!product) {
       continue; // Skip this item and proceed to the next
     }
+    const variant = product.variants.find((v) => v.sku === item.sku);
+    if (!variant) {
+      continue;
+    }
 
-    wishlist.items.push(product._id);
+    wishlist.items.push(item);
   }
 
   await wishlist.save();

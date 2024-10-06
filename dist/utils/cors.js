@@ -4,12 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
+const constants_1 = require("./constants");
 dotenv_1.default.config();
-const URLs = [process.env.MARKETPLACE_URL, process.env.SERVER_URL];
-if (!URLs) {
-    throw new Error("CLIENT_URL environment variable is not defined.");
-}
-const whitelist = URLs.map((url) => url.trim());
+const whitelist = Object.values(constants_1.platformMap);
 const corsOptions = {
     optionsSuccessStatus: 200, // Some legacy browsers (IE11, various SmartTVs) choke on 204
     origin: function (origin, callback) {

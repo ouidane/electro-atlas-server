@@ -15,7 +15,7 @@ async function handleCheckoutSessionCompleted(session: any) {
   try {
     const cartId = session.metadata.cartId;
     const email = session.customer_details.email;
-    const origin = process.env.MARKETPLACE_URL;
+    const origin = process.env.MARKETPLACE_URL as string;
 
     const paymentId = await createNewPayment(session, PAYMENT_STATUS.COMPLETED);
     const order = await createNewOrder(session, paymentId);

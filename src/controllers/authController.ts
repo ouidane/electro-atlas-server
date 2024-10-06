@@ -32,7 +32,7 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
     return next(createError(409, "Email already exists"));
   }
 
-  const origin = req.headers.origin;
+  const origin = req.headers.origin as string;
   const verificationCode = generateVerificationCode();
   const verificationToken = generateEmailVerificationToken(
     verificationCode,
@@ -94,7 +94,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   if (user && !user.isVerified) {
-    const origin = req.headers.origin;
+    const origin = req.headers.origin as string;
     const verificationCode = generateVerificationCode();
     const verificationToken = generateEmailVerificationToken(
       verificationCode,
@@ -167,10 +167,11 @@ const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
     return next(createError(404, "User not found"));
   }
 
-  const hashedToken = validateEmailVerificationToken(user.verificationToken);
+  const hashedToken = validateEmailVerificationToken(user.verificationToken!);
   if (
+    !hashedToken ||
     verificationCode !== hashedToken.verificationCode ||
-    user.verificationTokenExpirationDate < new Date()
+    user.verificationTokenExpirationDate! < new Date()
   ) {
     return next(createError(401, "Verification Failed"));
   }
@@ -206,7 +207,7 @@ const forgotPassword = async (
   }
 
   // Generate a random password reset token
-  const origin = req.headers.origin;
+  const origin = req.headers.origin as string;
   const passwordToken = crypto.randomBytes(70).toString("hex");
   const resetToken = generateResetToken({ userId: user.id, passwordToken });
 
@@ -312,7 +313,7 @@ const googleAuthCallback = async (
 ) => {
   const callbackUrl = req.query.state as string;
   const redirectUrl = decodeURIComponent(callbackUrl);
-  const platform = req.params.platform;
+  const platform = req.params.platform as keyof typeof platformMap;
   const origin = platformMap[platform];
 
   passport.authenticate(

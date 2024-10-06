@@ -20,7 +20,7 @@ const sendOrderConfirmationEmail = async ({
 
   const itemsList = orderItems
     .map(
-      (item) => `
+      (item: any) => `
       <tr>
         <td>${item.productName}</td>
         <td>${item.quantity}</td>

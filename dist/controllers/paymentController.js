@@ -57,8 +57,8 @@ const stripeWebhook = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         res.json({ received: true });
     }
-    catch (error) {
-        return res.status(400).send(`Webhook Error: ${error.message}`);
+    catch (err) {
+        return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 });
 exports.stripeWebhook = stripeWebhook;

@@ -50,7 +50,7 @@ const getAllProducts = async (
 
   const queryObject: any = {}; // Initialize empty query object
 
-  const filterHandlers = {
+  const filterHandlers: any = {
     color: (value: string) => ({ $in: value.split(",") }),
     brand: (value: string) => ({ $in: value.split(",") }),
     query: (value: string) => ({ name: { $regex: new RegExp(value, "i") } }),
@@ -264,7 +264,7 @@ const updateProduct = async (
     parentCategoryId?: string;
     variants?: ProductVariantsDoc[];
     specifications?: ProductSpecificationsDoc;
-  } = req.body;  
+  } = req.body;
 
   // Prepare the new product data
   const productData = {
@@ -286,7 +286,7 @@ const updateProduct = async (
   // Delete the images from database and from Cloudinary
   if (imagesToDelete && imagesToDelete.length > 0) {
     for (let i = 0; i < imagesToDelete.length; i++) {
-      product.images = product.images.filter(
+      product.images = product.images?.filter(
         (img) => img.publicId !== imagesToDelete[i]
       );
     }
@@ -299,10 +299,10 @@ const updateProduct = async (
     );
   }
 
-  if (reorderedImages && reorderedImages.length === product.images.length) {
+  if (reorderedImages && reorderedImages.length === product.images?.length) {
     let arrangedImages: ImageUrls[] = [];
     for (let i = 0; i < reorderedImages.length; i++) {
-      const publicId = product.images.find(
+      const publicId = product.images?.find(
         (img) => img.publicId === reorderedImages[i]
       );
       if (!publicId) {
@@ -317,7 +317,7 @@ const updateProduct = async (
 
   if (req.files && Array.isArray(req.files) && req.files.length > 0) {
     // Check total images limit
-    const existingImagesCount = product.images.length;
+    const existingImagesCount = product.images?.length || 0;
     const newImagesCount = req.files ? req.files.length : 0;
     const totalImagesCount = existingImagesCount + newImagesCount;
     if (totalImagesCount > 10) {
@@ -345,7 +345,7 @@ const updateProduct = async (
     }
 
     // Update the product with images URLs
-    product.images.push(...productImages);
+    product.images?.push(...productImages);
     await product.save();
   }
 

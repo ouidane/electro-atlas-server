@@ -13,7 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.stripeEvent = exports.createCheckoutSession = exports.createStripeCustomer = void 0;
-exports.createPaymentIntent = createPaymentIntent;
 exports.getLineItemsFromSession = getLineItemsFromSession;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -24,35 +23,6 @@ const debugLogStripe = (0, debug_1.default)("myapp:Stripe");
 const stripeSecretKey = process.env.STRIPE_KEY;
 const stripeWebhookSecret = process.env.STRIPE_ENDPOINT_SECRET;
 const stripeClient = new stripe_1.default(stripeSecretKey);
-function createPaymentIntent(customer, items) {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            // Calculate the total amount
-            const amount = items.reduce((sum, item) => sum + item.totalPrice, 0);
-            // Create the PaymentIntent
-            const paymentIntent = yield stripeClient.paymentIntents.create({
-                payment_method_types: ["card"],
-                amount: Math.round(amount * 100),
-                currency: "usd",
-                customer: customer.id,
-                metadata: {
-                    userId: customer.metadata.userId,
-                    items: JSON.stringify(items),
-                },
-                receipt_email: customer.email,
-                shipping: {
-                    name: customer.name,
-                    address: customer.address,
-                },
-            });
-            return paymentIntent;
-        }
-        catch (error) {
-            debugLogStripe("Error creating payment intent:", error);
-            throw new Error("Error creating payment intent");
-        }
-    });
-}
 // Function to create a customer in Stripe
 const createStripeCustomer = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     try {

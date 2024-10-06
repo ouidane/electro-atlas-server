@@ -28,7 +28,7 @@ function checkStock(formattedItems) {
             const product = productMap.get(item.productId.toString());
             if (!product) {
                 unavailableItems.push({
-                    productId: product._id.toString(),
+                    productId: item.productId.toString(),
                     sku: item.variant.sku,
                     reason: "Product not found",
                 });

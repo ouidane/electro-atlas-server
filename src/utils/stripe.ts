@@ -11,38 +11,6 @@ const stripeSecretKey = process.env.STRIPE_KEY as string;
 const stripeWebhookSecret = process.env.STRIPE_ENDPOINT_SECRET as string;
 const stripeClient = new stripe(stripeSecretKey);
 
-async function createPaymentIntent(
-  customer: stripe.Customer,
-  items: FormattedItem[]
-) {
-  try {
-    // Calculate the total amount
-    const amount = items.reduce((sum, item) => sum + item.totalPrice, 0);
-
-    // Create the PaymentIntent
-    const paymentIntent = await stripeClient.paymentIntents.create({
-      payment_method_types: ["card"],
-      amount: Math.round(amount * 100),
-      currency: "usd",
-      customer: customer.id,
-      metadata: {
-        userId: customer.metadata.userId,
-        items: JSON.stringify(items),
-      },
-      receipt_email: customer.email,
-      shipping: {
-        name: customer.name,
-        address: customer.address,
-      },
-    });
-
-    return paymentIntent;
-  } catch (error) {
-    debugLogStripe("Error creating payment intent:", error);
-    throw new Error("Error creating payment intent");
-  }
-}
-
 // Function to create a customer in Stripe
 const createStripeCustomer = async (userId: string) => {
   try {
@@ -101,7 +69,7 @@ const createCheckoutSession = async (
       mode: "payment",
       metadata: {
         profile: JSON.stringify(profile),
-        cartId: cartId.toString(),
+        cartId: (cartId as any).toString(),
       },
       success_url: `${process.env.MARKETPLACE_URL}/success-payment`,
       cancel_url: `${process.env.MARKETPLACE_URL}/canceled-payment`,
@@ -149,7 +117,6 @@ async function getLineItemsFromSession(session: Stripe.Checkout.Session) {
 export {
   createStripeCustomer,
   createCheckoutSession,
-  createPaymentIntent,
   stripeEvent,
   getLineItemsFromSession,
 };

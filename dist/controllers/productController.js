@@ -198,6 +198,7 @@ const createProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, func
 });
 exports.createProduct = createProduct;
 const updateProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b, _c, _d, _e;
     const { productId } = req.params;
     const { imagesToDelete, reorderedImages, name, description, brand, color, categoryId, parentCategoryId, variants, specifications, } = req.body;
     // Prepare the new product data
@@ -218,17 +219,17 @@ const updateProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     // Delete the images from database and from Cloudinary
     if (imagesToDelete && imagesToDelete.length > 0) {
         for (let i = 0; i < imagesToDelete.length; i++) {
-            product.images = product.images.filter((img) => img.publicId !== imagesToDelete[i]);
+            product.images = (_a = product.images) === null || _a === void 0 ? void 0 : _a.filter((img) => img.publicId !== imagesToDelete[i]);
         }
         // Delete the images from Cloudinary
         yield Promise.all(imagesToDelete.map((imagePublicId) => __awaiter(void 0, void 0, void 0, function* () {
             yield (0, cloudinary_1.destroyImage)(imagePublicId);
         })));
     }
-    if (reorderedImages && reorderedImages.length === product.images.length) {
+    if (reorderedImages && reorderedImages.length === ((_b = product.images) === null || _b === void 0 ? void 0 : _b.length)) {
         let arrangedImages = [];
         for (let i = 0; i < reorderedImages.length; i++) {
-            const publicId = product.images.find((img) => img.publicId === reorderedImages[i]);
+            const publicId = (_c = product.images) === null || _c === void 0 ? void 0 : _c.find((img) => img.publicId === reorderedImages[i]);
             if (!publicId) {
                 return next((0, http_errors_1.default)(404, "Image publicId not found"));
             }
@@ -239,7 +240,7 @@ const updateProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     }
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
         // Check total images limit
-        const existingImagesCount = product.images.length;
+        const existingImagesCount = ((_d = product.images) === null || _d === void 0 ? void 0 : _d.length) || 0;
         const newImagesCount = req.files ? req.files.length : 0;
         const totalImagesCount = existingImagesCount + newImagesCount;
         if (totalImagesCount > 10) {
@@ -257,7 +258,7 @@ const updateProduct = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             productImages.push(productImagesUrls);
         }
         // Update the product with images URLs
-        product.images.push(...productImages);
+        (_e = product.images) === null || _e === void 0 ? void 0 : _e.push(...productImages);
         yield product.save();
     }
     res.status(200).json({ message: "product updated" });

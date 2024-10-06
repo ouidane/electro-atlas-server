@@ -46,8 +46,8 @@ CartSchema.pre<CartDoc>(
     try {
       await CartItem.deleteMany({ cartId: this._id });
       next();
-    } catch (error) {
-      next(error);
+    } catch (err: any) {
+      next(err);
     }
   }
 );
@@ -69,7 +69,7 @@ CartSchema.statics.updateCart = async function (
     const totalPrice = cartItems.reduce((acc, current) => {
       const product = current.productId as any;
       const variant = product.variants.find(
-        (variant) => variant.sku === current.sku
+        (variant: any) => variant.sku === current.sku
       );
       const productPrice = variant.salePrice;
       return acc + current.quantity * productPrice;

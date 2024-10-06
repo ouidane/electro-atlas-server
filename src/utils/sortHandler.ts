@@ -1,11 +1,11 @@
 // Helper function to build sort criteria dynamically
-export const buildSortOption = (sort, allowedSortFields): any => {
+export const buildSortOption = (sort: string, allowedSortFields: any): any => {
   if (!sort) {
     return { createdAt: -1 };
   }
 
   const sortFields = sort.split(",");
-  const sortCriteria = {};
+  const sortCriteria: any = {};
 
   sortFields.forEach((field: string) => {
     const sortOrder = field.startsWith("-") ? 1 : -1;

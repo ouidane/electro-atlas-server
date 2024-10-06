@@ -22,7 +22,11 @@ const addWishlistItemsToDatabase = (items, userId) => __awaiter(void 0, void 0, 
         if (!product) {
             continue; // Skip this item and proceed to the next
         }
-        wishlist.items.push(product._id);
+        const variant = product.variants.find((v) => v.sku === item.sku);
+        if (!variant) {
+            continue;
+        }
+        wishlist.items.push(item);
     }
     yield wishlist.save();
 });

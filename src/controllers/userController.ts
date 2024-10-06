@@ -29,8 +29,8 @@ const getCurrentUser = async (
 
   res.status(200).json({
     user,
-    cartId: cart._id || null,
-    wishlistId: wishlist._id || null,
+    cartId: cart?._id || null,
+    wishlistId: wishlist?._id || null,
   });
 };
 
@@ -56,9 +56,10 @@ const updateCurrentUser = async (
     description,
   } = req.body;
 
-  let profile = await Profile.findOne({ userId });
+  let profile: any = await Profile.findOne({ userId });
   if (!profile) {
     profile = new Profile({});
+    profile.userId = userId;
   }
 
   profile.familyName = familyName;
@@ -87,7 +88,7 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
 
   const queryObject: any = {};
 
-  const filterHandlers = {
+  const filterHandlers: any = {
     platform: (value: string) => ({ platform: { $in: value.split(",") } }),
     isVerified: (value: string) => ({ isVerified: value === "true" }),
     role: (value: string) => ({ role: { $in: value.split(",") } }),
@@ -138,7 +139,7 @@ const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     givenName: "profile.givenName",
     fullName: "profile.fullName",
   };
-  const sortCriteria = buildSortOption(sort, AllowedSortFields);
+  const sortCriteria = buildSortOption(sort as string, AllowedSortFields);
 
   const result = await User.aggregate([
     {
@@ -266,7 +267,7 @@ const updateUserById = async (
   user.role = role ? role : user.role;
   await user.save();
 
-  let profile = await Profile.findOne({ userId });
+  let profile: any = await Profile.findOne({ userId });
   if (!profile) {
     profile = new Profile();
   }

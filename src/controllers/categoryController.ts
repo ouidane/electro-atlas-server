@@ -26,7 +26,7 @@ const getParentCategories = async (req: Request, res: Response) => {
     updatedAt: "updatedAt",
     name: "name",
   };
-  const sortCriteria = buildSortOption(sort, AllowedSortFields);
+  const sortCriteria = buildSortOption(sort as string, AllowedSortFields);
 
   const parentCategories = await ParentCategory.find(queryObject)
     .select("-__v")
@@ -191,7 +191,7 @@ const getChildCategories = async (
     updatedAt: "updatedAt",
     name: "name",
   };
-  const sortCriteria = buildSortOption(sort, AllowedSortFields);
+  const sortCriteria = buildSortOption(sort as string, AllowedSortFields);
 
   const childCategories = await Category.find(queryObject)
     .populate({

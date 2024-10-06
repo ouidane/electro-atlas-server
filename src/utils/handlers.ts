@@ -18,7 +18,7 @@ async function checkStock(
 
     if (!product) {
       unavailableItems.push({
-        productId: product._id.toString(),
+        productId: item.productId.toString(),
         sku: item.variant.sku,
         reason: "Product not found",
       });
@@ -50,29 +50,24 @@ async function checkStock(
   };
 }
 
-async function updateInventory(orderId) {
+async function updateInventory(orderId: unknown) {
   const orderItems = await OrderItem.find({ orderId });
   for (const item of orderItems) {
     await Product.findOneAndUpdate(
       { _id: item.productId, "variants.sku": item.sku },
-      { $inc: { "variants.$.inventory": -item.quantity }}
+      { $inc: { "variants.$.inventory": -item.quantity } }
     );
   }
 }
 
-async function restoreInventory(orderId) {
+async function restoreInventory(orderId: unknown) {
   const orderItems = await OrderItem.find({ orderId });
   for (const item of orderItems) {
     await Product.findOneAndUpdate(
       { _id: item.productId, "variants.sku": item.sku },
-      { $inc: { "variants.$.inventory": item.quantity }}
+      { $inc: { "variants.$.inventory": item.quantity } }
     );
   }
 }
 
-
-export {
-  checkStock,
-  updateInventory,
-  restoreInventory,
-};
+export { checkStock, updateInventory, restoreInventory };

@@ -12,7 +12,7 @@ const logger_1 = require("../utils/logger");
 const errorHandler = (err, req, res, next) => {
     logger_1.logger.error(`Error: ${err}`);
     if (err instanceof http_errors_1.HttpError) {
-        return res.status(err.status).json({ message: err.message });
+        return res.status(err.statusCode).json({ message: err.message });
     }
     if (err instanceof errors_1.ValidationError) {
         const errors = JSON.stringify(err.errors);

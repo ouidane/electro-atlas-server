@@ -1,6 +1,5 @@
 export declare const PLATFORMS: {
     readonly MARKETPLACE: "marketplace";
-    readonly DELIVERY: "delivery";
     readonly VENDOR: "vendor";
 };
 export declare const ROLE: {
@@ -11,7 +10,9 @@ export declare const ROLE: {
     readonly DELIVER: "deliver";
 };
 export declare const platformMap: {
-    [key: string]: string;
+    readonly marketplace: string;
+    readonly vendor: string;
+    readonly server: string;
 };
 export declare const IMAGE_SIZES: {
     readonly TINY: 200;
