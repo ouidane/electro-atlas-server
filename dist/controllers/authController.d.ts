@@ -1,0 +1,10 @@
+import { Request, Response, NextFunction } from "express";
+declare const register: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const login: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const logout: (req: Request, res: Response, next: NextFunction) => void;
+declare const verifyEmail: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const forgotPassword: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const resetPassword: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const initiateGoogleAuth: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+declare const googleAuthCallback: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+export { register, login, logout, verifyEmail, forgotPassword, resetPassword, initiateGoogleAuth, googleAuthCallback, };

@@ -15,7 +15,7 @@ const errorHandler = (
   logger.error(`Error: ${err}`);
 
   if (err instanceof HttpError) {
-    return res.status(err.status).json({ message: err.message });
+    return res.status(err.statusCode).json({ message: err.message });
   }
 
   if (err instanceof ValidationError) {
