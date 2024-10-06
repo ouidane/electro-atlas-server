@@ -5,7 +5,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "moduleResolution": "node",
-    "types": ["node", "express"],
+    "types": ["node"],
     "sourceMap": true,
     "declaration": true,
     "esModuleInterop": true,
