@@ -1,72 +1,61 @@
 import express, { Router } from "express";
-import {
-  getParentCategories,
-  getSingleParentCategory,
-  createParentCategory,
-  updateParentCategory,
-  deleteParentCategory,
-  getChildCategories,
-  getSingleChildCategory,
-  createChildCategory,
-  updateChildCategory,
-  deleteChildCategory,
-} from "../controllers/categoryController";
+import { categoryController } from "../controllers/categoryController";
 import {
   authenticateUser,
   authorizePermissions,
-} from "../middleware/premissions";
-import { uploadSingleImage } from "../middleware/multer";
+} from "../middlewares/premissions";
+import { uploadSingleImage } from "../middlewares/multer";
 import { ROLE } from "../utils/constants";
 
 const router: Router = express.Router();
 
 router
   .route("/parent")
-  .get(getParentCategories)
+  .get(categoryController.getParentCategories)
   .post(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     uploadSingleImage,
-    createParentCategory
+    categoryController.createParentCategory
   );
 router
   .route("/parent/:parentCategoryId")
-  .get(getSingleParentCategory)
+  .get(categoryController.getSingleParentCategory)
   .patch(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     uploadSingleImage,
-    updateParentCategory
+    categoryController.updateParentCategory
   )
   .delete(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     uploadSingleImage,
-    deleteParentCategory
+    categoryController.deleteParentCategory
   );
 router
   .route("/parent/:parentCategoryId/child")
-  .get(getChildCategories)
+  .get(categoryController.getChildCategories)
   .post(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     uploadSingleImage,
-    createChildCategory
+    categoryController.createChildCategory
   );
 router
   .route("/parent/:parentCategoryId/child/:childCategoryId")
-  .get(getSingleChildCategory)
+  .get(categoryController.getSingleChildCategory)
   .patch(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     uploadSingleImage,
-    updateChildCategory
+    categoryController.updateChildCategory
   )
   .delete(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     uploadSingleImage,
-    deleteChildCategory
+    categoryController.deleteChildCategory
   );
 
 export default router;

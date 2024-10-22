@@ -1,41 +1,49 @@
 import express, { Router } from "express";
-import {
-  getCurrentUser,
-  updateCurrentUser,
-  getUsers,
-  createUser,
-  getUserById,
-  updateUserById,
-  deleteUserById,
-} from "../controllers/userController";
+import { userController } from "../controllers/userController";
 import {
   authenticateUser,
   authorizePermissions,
-} from "../middleware/premissions";
+} from "../middlewares/premissions";
 import { ROLE } from "../utils/constants";
-import validateUser from "../middleware/validateUser";
+import validateUser from "../middlewares/validateUser";
 
 const router: Router = express.Router();
 
 router
   .route("/current/connect")
-  .get(authenticateUser, getCurrentUser)
-  .patch(authenticateUser, validateUser, updateCurrentUser);
+  .get(authenticateUser, userController.getCurrentUser)
+  .patch(authenticateUser, validateUser, userController.updateCurrentUser);
 
 router
   .route("/")
-  .get(authenticateUser, authorizePermissions(ROLE.ADMIN), getUsers)
-  .post(authenticateUser, authorizePermissions(ROLE.ADMIN), createUser);
+  .get(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    userController.getUsers
+  )
+  .post(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    userController.createUser
+  );
 
 router
   .route("/:userId")
-  .get(authenticateUser, authorizePermissions(ROLE.ADMIN), getUserById)
+  .get(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    userController.getUserById
+  )
   .patch(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
     validateUser,
-    updateUserById
+    userController.updateUserById
   )
-  .delete(authenticateUser, authorizePermissions(ROLE.ADMIN), deleteUserById);
+  .delete(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    userController.deleteUserById
+  );
 
 export default router;

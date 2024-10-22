@@ -1,26 +1,24 @@
 import express, { Router } from "express";
-import {
-  getItemById,
-  addItemToCart,
-  updateItemInCart,
-  deleteItemFromCart,
-  clearCart,
-} from "../controllers/cartController";
+import { cartController } from "../controllers/cartController";
 import {
   authenticateUser,
   authorizeCartAccess,
-} from "../middleware/premissions";
+} from "../middlewares/premissions";
 
 const router: Router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .post(authenticateUser, authorizeCartAccess, addItemToCart)
-  .delete(authenticateUser, authorizeCartAccess, clearCart);
+  .post(authenticateUser, authorizeCartAccess, cartController.addItemToCart)
+  .delete(authenticateUser, authorizeCartAccess, cartController.clearCart);
 router
   .route("/:itemId")
-  .get(authenticateUser, authorizeCartAccess, getItemById)
-  .patch(authenticateUser, authorizeCartAccess, updateItemInCart)
-  .delete(authenticateUser, authorizeCartAccess, deleteItemFromCart);
+  .get(authenticateUser, authorizeCartAccess, cartController.getItemById)
+  .patch(authenticateUser, authorizeCartAccess, cartController.updateItemInCart)
+  .delete(
+    authenticateUser,
+    authorizeCartAccess,
+    cartController.deleteItemFromCart
+  );
 
 export default router;

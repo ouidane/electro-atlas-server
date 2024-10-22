@@ -1,46 +1,46 @@
 import express, { Router } from "express";
-import {
-  getAllProducts,
-  createProduct,
-  deleteProduct,
-  getProductById,
-  updateProduct,
-} from "../controllers/productController";
+import { productController } from "../controllers/productController";
 import {
   authenticateUser,
   authorizePermissions,
   authorizeProductAccess,
-} from "../middleware/premissions";
-import { uploadImages } from "../middleware/multer";
+} from "../middlewares/premissions";
+import { uploadImages } from "../middlewares/multer";
 import { ROLE } from "../utils/constants";
+import {
+  validateProduct,
+  validateUpdateProduct,
+} from "../middlewares/validateProduct";
 
 const router: Router = express.Router();
 
 router
   .route("/")
-  .get(getAllProducts)
+  .get(productController.getAllProducts)
   .post(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN, ROLE.SELLER),
+    validateProduct,
     uploadImages,
-    createProduct
+    productController.createProduct
   );
 
 router
   .route("/:productId")
-  .get(getProductById)
+  .get(productController.getProductById)
   .patch(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN, ROLE.SELLER),
     authorizeProductAccess,
+    validateUpdateProduct,
     uploadImages,
-    updateProduct
+    productController.updateProduct
   )
   .delete(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN, ROLE.SELLER),
     authorizeProductAccess,
-    deleteProduct
+    productController.deleteProduct
   );
 
 export default router;

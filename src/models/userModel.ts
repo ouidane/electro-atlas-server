@@ -13,7 +13,7 @@ export interface UserDoc extends Document {
   email: string;
   password: string;
   confirmPassword?: string;
-  profile?: ProfileDoc;
+  profile: ProfileDoc;
   isVerified: boolean;
   verified?: Date;
   passwordToken?: string;
@@ -65,22 +65,11 @@ const UserSchema = new Schema<UserDoc>(
         message: "Passwords do not match",
       },
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    verified: {
-      type: Date,
-    },
-    passwordToken: {
-      type: String,
-    },
-    passwordTokenExpirationDate: {
-      type: Date,
-    },
-    verificationToken: {
-      type: String,
-    },
+    isVerified: { type: Boolean, default: false },
+    verified: { type: Date },
+    passwordToken: { type: String },
+    passwordTokenExpirationDate: { type: Date },
+    verificationToken: { type: String },
     verificationTokenExpirationDate: {
       type: Date,
       default: new Date(Date.now() + 1000 * 60 * 10),
@@ -127,15 +116,17 @@ UserSchema.methods.comparePassword = async function (password: string) {
   }
 };
 
-// Replace the pre-remove hook with pre-deleteOne
+// Define custom method to delete Profile, Cart and Wishlist
 UserSchema.pre(
   "deleteOne",
   { document: true, query: false },
   async function (next) {
     try {
-      await Profile.deleteOne({ userId: this._id });
-      await Cart.deleteOne({ userId: this._id });
-      await Wishlist.deleteOne({ userId: this._id });
+      await Promise.all([
+        Profile.deleteOne({ userId: this._id }),
+        Cart.deleteOne({ userId: this._id }),
+        Wishlist.deleteOne({ userId: this._id }),
+      ]);
       next();
     } catch (err: any) {
       next(err);

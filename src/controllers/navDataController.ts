@@ -1,13 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ParentCategory } from "../models";
-import redisClient from "../db/connectRedis";
 
 const getNavData = async (req: Request, res: Response, next: NextFunction) => {
-  const cachedData = await redisClient.get("departments");
-  if (cachedData) {
-    return res.status(200).json({ allDepartments: JSON.parse(cachedData) });
-  }
-
   const allDepartments = await ParentCategory.aggregate([
     {
       $lookup: {
@@ -21,8 +15,6 @@ const getNavData = async (req: Request, res: Response, next: NextFunction) => {
     { $sort: { createdAt: 1 } },
     { $project: { name: 1, childCategories: 1 } },
   ]);
-
-  await redisClient.set("departments", JSON.stringify(allDepartments));
 
   res.status(200).json({ allDepartments });
 };

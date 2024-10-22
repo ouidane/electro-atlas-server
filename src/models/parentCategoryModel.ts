@@ -1,12 +1,12 @@
 import { Document, Schema, model } from "mongoose";
 import { CategoryDoc } from "./categoryModel";
-import { type ImageUrls } from "../@types/types";
+import { type ImageUrls } from "../types/types";
 
 // Define the interface for Category document
 export interface ParentCategoryDoc extends Document {
   name: string;
   image?: ImageUrls;
-  description?: string;
+  description: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

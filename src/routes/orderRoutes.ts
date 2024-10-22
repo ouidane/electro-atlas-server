@@ -3,24 +3,26 @@ import {
   authenticateUser,
   authorizeOrderAccess,
   authorizePermissions,
-} from "../middleware/premissions";
-import {
-  getBuyerOrders,
-  getAllOrders,
-  getOrderById,
-} from "../controllers/orderController";
+} from "../middlewares/premissions";
+import { orderController } from "../controllers/orderController";
 import { ROLE } from "../utils/constants";
 
 const router: Router = express.Router();
 
 router
   .route("/")
-  .get(authenticateUser, authorizePermissions(ROLE.ADMIN), getAllOrders);
+  .get(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    orderController.getAllOrders
+  );
 
-router.route("/buyer/connect").get(authenticateUser, getBuyerOrders);
+router
+  .route("/buyer/connect")
+  .get(authenticateUser, orderController.getBuyerOrders);
 
 router
   .route("/:orderId")
-  .get(authenticateUser, authorizeOrderAccess, getOrderById);
+  .get(authenticateUser, authorizeOrderAccess, orderController.getOrderById);
 
 export default router;

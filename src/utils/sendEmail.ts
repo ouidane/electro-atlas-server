@@ -1,22 +1,11 @@
-import dotenv from "dotenv";
-dotenv.config();
 import nodemailer, { Transporter } from "nodemailer";
+import nodemailerConfig from "../config/nodemailerConfig";
 
-const nodemailerConfig = {
-  host: process.env.MAIL_HOST,
-  port: Number(process.env.MAIL_PORT),
-  secure: process.env.NODE_ENV === "production",
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASSWORD,
-  },
-};
-
-interface EmailContent {
+type EmailContent = {
   to: string;
   subject: string;
   html: string;
-}
+};
 
 const sendEmail = async ({
   to,

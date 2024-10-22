@@ -1,27 +1,36 @@
 import express, { Router } from "express";
-import {
-  createReview,
-  getReviews,
-  getReviewById,
-  updateReview,
-  deleteReview,
-} from "../controllers/reviewController";
+import { reviewController } from "../controllers/reviewController";
 import {
   authenticateUser,
   authorizeReviewAccess,
-} from "../middleware/premissions";
+} from "../middlewares/premissions";
+import {
+  validateCreateReview,
+  validateUpdateReview,
+} from "../middlewares/validateReview";
 
 const router: Router = express.Router({ mergeParams: true });
 
-router
-  .route("/")
-  .get(getReviews)
-  .post(authenticateUser, createReview);
+router.route("/").get(reviewController.getReviews).post(
+  authenticateUser,
+  validateCreateReview,
+
+  reviewController.createReview
+);
 
 router
   .route("/:reviewId")
-  .get(getReviewById)
-  .patch(authenticateUser, authorizeReviewAccess, updateReview)
-  .delete(authenticateUser, authorizeReviewAccess, deleteReview);
+  .get(reviewController.getReviewById)
+  .patch(
+    authenticateUser,
+    authorizeReviewAccess,
+    validateUpdateReview,
+    reviewController.updateReview
+  )
+  .delete(
+    authenticateUser,
+    authorizeReviewAccess,
+    reviewController.deleteReview
+  );
 
 export default router;

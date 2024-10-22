@@ -12,19 +12,17 @@ export interface DeliveryDoc extends Document {
   orderId: Types.ObjectId;
   userId: Types.ObjectId;
   deliveryStatus: DeliveryStatus;
-  trackingNumber?: string;
-  carrier?: string; // Examples: "UPS", "FedEx", "USPS", "DHL", etc.
+  carrier: string; // Examples: "UPS", "FedEx", "USPS", "DHL", etc.
   estimatedDeliveryDate: Date;
-  actualDeliveryDate?: Date;
+  actualDeliveryDate: Date;
   shippingAddress: {
     street: string;
     city: string;
-    state: string;
     country: string;
     postalCode: string;
   };
   //   signatureRequired: boolean;
-  deliveryInstructions?: string;
+  deliveryInstructions: string;
   trackingHistory: TrackingUpdate[];
   createdAt: Date;
   updatedAt: Date;
@@ -32,16 +30,13 @@ export interface DeliveryDoc extends Document {
 
 export interface DeliveryModel extends Model<DeliveryDoc> {
   updateDeliveryStatus(
-    this: DeliveryModel,
     deliveryId: Types.ObjectId,
     newStatus: DeliveryStatus,
     location: string,
     description: string
   ): Promise<DeliveryDoc>;
   updateTrackingInfo(
-    this: DeliveryModel,
     deliveryId: Types.ObjectId,
-    trackingNumber: string,
     carrier: string
   ): Promise<DeliveryDoc>;
 }
@@ -63,7 +58,6 @@ const DeliverySchema = new Schema<DeliveryDoc, DeliveryModel>(
       enum: Object.values(DELIVERY_STATUS),
       default: DELIVERY_STATUS.PENDING,
     },
-    trackingNumber: { type: String },
     carrier: { type: String },
     estimatedDeliveryDate: { type: Date, required: true },
     actualDeliveryDate: { type: Date },
@@ -92,7 +86,6 @@ const DeliverySchema = new Schema<DeliveryDoc, DeliveryModel>(
 );
 
 DeliverySchema.statics.updateDeliveryStatus = async function (
-  this: DeliveryModel,
   deliveryId: Types.ObjectId,
   newStatus: DeliveryStatus,
   location: string,
@@ -120,14 +113,12 @@ DeliverySchema.statics.updateDeliveryStatus = async function (
 };
 
 DeliverySchema.statics.updateTrackingInfo = async function (
-  this: DeliveryModel,
   deliveryId: Types.ObjectId,
-  trackingNumber: string,
   carrier: string
 ): Promise<DeliveryDoc> {
   const delivery = await this.findByIdAndUpdate(
     deliveryId,
-    { trackingNumber, carrier },
+    { carrier },
     { new: true }
   );
   if (!delivery) {

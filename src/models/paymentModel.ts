@@ -11,9 +11,9 @@ export interface PaymentDoc extends Document {
   paymentStatus: PaymentStatus;
   paymentMethod: PaymentMethod;
   userId: Types.ObjectId;
-  customerId?: string;
-  transactionId?: string;
-  refundId?: string;
+  customerId: string;
+  transactionId: string;
+  refundId: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

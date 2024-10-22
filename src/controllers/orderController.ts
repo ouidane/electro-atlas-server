@@ -1,93 +1,35 @@
 import { Request, Response, NextFunction } from "express";
-import { Order, OrderItem } from "../models";
-import createError from "http-errors";
+import { orderService } from "../services/orderService";
 
-const getBuyerOrders = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const userId = req.user.id;
-  const { limit = 10, page = 1 } = req.query;
+class OrderController {
+  async getBuyerOrders(req: Request, res: Response) {
+    const userId = req.user.id;
+    const { limit, page } = req.query;
+    const result = await orderService.getBuyerOrders(userId, {
+      page: Number(page),
+      limit: Number(limit),
+    });
 
-  const pageNumber = parseInt(page as string) || 1;
-  const limitNumber = parseInt(limit as string) || 10;
-  const skip = (pageNumber - 1) * limitNumber;
-
-  const orders = await Order.find({ userId })
-    .populate({ path: "orderItems", select: "-__v", options: { lean: true } })
-    .select("-__v")
-    .sort({ createdAt: "desc" })
-    .skip(skip)
-    .limit(limitNumber)
-    .lean();
-
-  const totalCount = await Order.countDocuments({ userId });
-
-  res.status(200).json({
-    orders,
-    pagination: {
-      currentPage: pageNumber,
-      totalPages: Math.ceil(totalCount / limitNumber),
-      totalCount,
-      limit: limitNumber,
-    },
-  });
-};
-
-const getAllOrders = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { userId, limit = 10, page = 1 } = req.query;
-  const pageNumber = parseInt(page as string, 10);
-  const limitNumber = parseInt(limit as string, 10);
-  const skip = (pageNumber - 1) * limitNumber;
-
-  // Build the query
-  const query: any = {};
-  if (userId) {
-    query.userId = userId;
+    res.status(200).json(result);
   }
 
-  const orders = await Order.find(query)
-    .populate({ path: "orderItems", select: "-__v", options: { lean: true } })
-    .select("-__v")
-    .sort({ createdAt: "desc" })
-    .skip(skip)
-    .limit(limitNumber)
-    .lean();
+  async getAllOrders(req: Request, res: Response) {
+    const { userId, limit, page } = req.query;
+    const result = await orderService.getAllOrders({
+      userId: userId as string,
+      page: Number(page),
+      limit: Number(limit),
+    });
 
-  const totalOrders = await Order.countDocuments(query);
-
-  res.status(200).json({
-    orders,
-    pagination: {
-      currentPage: pageNumber,
-      totalPages: Math.ceil(totalOrders / limitNumber),
-      totalOrders,
-      limit: limitNumber,
-    },
-  });
-};
-
-const getOrderById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { orderId } = req.params;
-
-  const order = await Order.findById(orderId)
-    .populate({ path: "orderItems", select: "-__v", options: { lean: true } })
-    .select("-__v")
-    .lean();
-  if (!order) {
-    return next(createError(404, "Order not found"));
+    res.status(200).json(result);
   }
 
-  res.status(200).json({ order });
-};
+  async getOrderById(req: Request, res: Response) {
+    const { orderId } = req.params;
+    const order = await orderService.getOrderById(orderId);
 
-export { getBuyerOrders, getAllOrders, getOrderById };
+    res.status(200).json({ order });
+  }
+}
+
+export const orderController = new OrderController();

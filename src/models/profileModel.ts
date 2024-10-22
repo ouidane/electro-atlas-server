@@ -4,22 +4,22 @@ import { CITIES, COUNTRIES } from "../utils/constants";
 
 // Define the interface for Profile document
 export interface ProfileDoc extends Document {
-  userId: Types.ObjectId;
-  familyName: string;
-  givenName: string;
-  fullName: string;
+  userId: Types.ObjectId | string;
+  familyName?: string;
+  givenName?: string;
+  fullName?: string;
   phone?: string;
-  contact?: {
+  contact: {
     email?: string;
     phone?: string;
     website?: string;
   };
-  address?: {
-    line1: string;
+  address: {
+    line1?: string;
     line2?: string;
-    postalCode: string;
-    country: (typeof COUNTRIES)[keyof typeof COUNTRIES];
-    city: (typeof CITIES)[keyof typeof CITIES];
+    postalCode?: string;
+    country?: (typeof COUNTRIES)[keyof typeof COUNTRIES];
+    city?: (typeof CITIES)[keyof typeof CITIES];
   };
   description?: string;
   createdAt?: Date;

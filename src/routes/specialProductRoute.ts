@@ -1,16 +1,14 @@
 import express, { Router } from "express";
-import { bestOffers } from "../controllers/bestOffersController";
-import { bestSeller } from "../controllers/bestSellerController";
-import { liveSearch } from "../controllers/liveSearchController";
-import { recommendedProducts } from "../controllers/recommendController";
-import { productFilters } from "../controllers/productFilterController";
+import { specialProductController } from "../controllers/specialProductController";
 
 const router: Router = express.Router();
 
-router.route("/best-offers").get(bestOffers);
-router.route("/best-seller").get(bestSeller);
-router.route("/live-search").get(liveSearch);
-router.route("/recommended-products").get(recommendedProducts);
-router.route("/product-filters").get(productFilters);
+router.route("/best-offers").get(specialProductController.bestOffers);
+router.route("/best-seller").get(specialProductController.bestSeller);
+router.route("/live-search").get(specialProductController.liveSearch);
+router
+  .route("/recommended-products")
+  .get(specialProductController.recommendedProducts);
+router.route("/product-filters").get(specialProductController.productFilters);
 
 export default router;

@@ -12,24 +12,12 @@ export interface OrderItemDoc extends Document {
   image?: string;
   isRefunded: boolean;
   refundedQuantity: number;
-  notes?: string;
+  notes: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface OrderItemModel extends Model<OrderItemDoc> {
-  calculateTotal(
-    this: OrderItemModel,
-    orderItemId: Types.ObjectId
-  ): Promise<number>;
-  updateRefundStatus(
-    this: OrderItemModel,
-    orderItemId: Types.ObjectId,
-    refundedQuantity: number
-  ): Promise<void>;
-}
-
-const OrderItemSchema = new Schema<OrderItemDoc, OrderItemModel>(
+const OrderItemSchema = new Schema<OrderItemDoc>(
   {
     orderId: {
       type: Schema.Types.ObjectId,
@@ -59,53 +47,6 @@ const OrderItemSchema = new Schema<OrderItemDoc, OrderItemModel>(
   { timestamps: true }
 );
 
-OrderItemSchema.statics.calculateTotal = async function (
-  orderItemId: Types.ObjectId
-): Promise<number> {
-  try {
-    const orderItem = await this.findById(orderItemId);
-    if (!orderItem) {
-      throw new Error("Order item not found");
-    }
-    const total =
-      orderItem.salePrice * (orderItem.quantity - orderItem.refundedQuantity);
-    const totalPrice = parseFloat(total.toFixed(2))
-
-    await this.findByIdAndUpdate(orderItemId, { totalPrice });
-    return total;
-  } catch (error) {
-    throw new Error("Error calculating total for order item");
-  }
-};
-
-OrderItemSchema.statics.updateRefundStatus = async function (
-  this: OrderItemModel,
-  orderItemId: Types.ObjectId,
-  refundedQuantity: number
-): Promise<void> {
-  try {
-    const orderItem = await this.findById(orderItemId);
-    if (!orderItem) {
-      throw new Error("Order item not found");
-    }
-    if (refundedQuantity > orderItem.quantity) {
-      throw new Error("Refunded quantity cannot exceed original quantity");
-    }
-    const newRefundedQuantity = orderItem.refundedQuantity + refundedQuantity;
-    const isFullyRefunded = newRefundedQuantity === orderItem.quantity;
-    await this.findByIdAndUpdate(orderItemId, {
-      refundedQuantity: newRefundedQuantity,
-      isRefunded: isFullyRefunded,
-    });
-    await this.calculateTotal(orderItemId);
-  } catch (error) {
-    throw new Error("Error updating refund status for order item");
-  }
-};
-
-const OrderItem = model<OrderItemDoc, OrderItemModel>(
-  "OrderItem",
-  OrderItemSchema
-);
+const OrderItem = model<OrderItemDoc>("OrderItem", OrderItemSchema);
 
 export default OrderItem;

@@ -1,20 +1,21 @@
 import express, { Router, Request, Response, NextFunction } from "express";
-import { authenticateUser } from "../middleware/premissions";
-import {
-  createStripeCheckout,
-  stripeWebhook,
-} from "../controllers/paymentController";
+import { authenticateUser } from "../middlewares/premissions";
+import { paymentController } from "../controllers/paymentController";
 
 const router: Router = express.Router();
 
 // Regular routes
-router.post("/checkout", authenticateUser, createStripeCheckout);
+router.post(
+  "/checkout",
+  authenticateUser,
+  paymentController.createStripeCheckout
+);
 
 // Webhook route with raw body handling
 router.post(
   "/webhook",
   express.raw({ type: "application/json" }),
-  stripeWebhook
+  paymentController.stripeWebhook
 );
 
 export default router;

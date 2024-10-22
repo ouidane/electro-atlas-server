@@ -1,12 +1,10 @@
-import dotenv from "dotenv";
-dotenv.config();
 import { PassportStatic } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import User from "../models/userModel";
+import { User, Profile } from "../models";
 import crypto from "crypto";
 import { PLATFORMS } from "./constants";
-import Profile from "../models/profileModel";
+import { authConfig } from "../config/authConfig";
 
 declare module "express" {
   interface Request {
@@ -109,8 +107,8 @@ export default (passport: PassportStatic): void => {
     "google-marketplace",
     createGoogleStrategy(
       PLATFORMS.MARKETPLACE,
-      process.env.GOOGLE_MARKETPLACE_CLIENT_ID!,
-      process.env.GOOGLE_MARKETPLACE_CLIENT_SECRET!,
+      authConfig.googleMarketplace.clientId,
+      authConfig.googleMarketplace.clientSecret,
       "/api/auth/google/marketplace/callback"
     )
   );
@@ -119,8 +117,8 @@ export default (passport: PassportStatic): void => {
     "google-vendor",
     createGoogleStrategy(
       PLATFORMS.VENDOR,
-      process.env.GOOGLE_VENDOR_CLIENT_ID!,
-      process.env.GOOGLE_VENDOR_CLIENT_SECRET!,
+      authConfig.googleVendor.clientId,
+      authConfig.googleVendor.clientSecret,
       "/api/auth/google/vendor/callback"
     )
   );

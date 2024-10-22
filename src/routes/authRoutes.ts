@@ -1,27 +1,30 @@
-import dotenv from "dotenv";
 import express from "express";
+import { authController } from "../controllers/authController";
+import { authenticateUser } from "../middlewares/premissions";
 import {
-  register,
-  login,
-  logout,
-  verifyEmail,
-  forgotPassword,
-  resetPassword,
-  initiateGoogleAuth,
-  googleAuthCallback,
-} from "../controllers/authController";
-import { authenticateUser } from "../middleware/premissions";
+  validateLogin,
+  validateVerifyEmail,
+  validateForgotPassword,
+  validateResetPassword,
+} from "../middlewares/validateAuth";
 
-dotenv.config();
 const router = express.Router();
 
-router.route("/register").post(register);
-router.route("/login").post(login);
-router.route("/verify-email").post(verifyEmail);
-router.route("/forgot-password").post(forgotPassword);
-router.route("/reset-password").post(resetPassword);
-router.route("/google").get(initiateGoogleAuth);
-router.route("/google/:platform/callback").get(googleAuthCallback);
-router.route("/logout").delete(authenticateUser, logout);
+router.route("/register").post(authController.register);
+router.route("/login").post(validateLogin, authController.login);
+router
+  .route("/verify-email")
+  .post(validateVerifyEmail, authController.verifyEmail);
+router
+  .route("/forgot-password")
+  .post(validateForgotPassword, authController.forgotPassword);
+router
+  .route("/reset-password")
+  .post(validateResetPassword, authController.resetPassword);
+router.route("/google").get(authController.initiateGoogleAuth);
+router
+  .route("/google/:platform/callback")
+  .get(authController.googleAuthCallback);
+router.route("/logout").delete(authenticateUser, authController.logout);
 
 export default router;

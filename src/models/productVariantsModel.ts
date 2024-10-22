@@ -37,11 +37,11 @@ export const ProductVariantsSchema = new Schema<ProductVariantsDoc>({
   },
   discountPercent: {
     type: Number,
-    default: 0
+    default: 0,
   },
   saleStartDate: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   saleEndDate: {
     type: Date,

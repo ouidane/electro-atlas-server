@@ -1,137 +1,59 @@
 import { Request, Response, NextFunction } from "express";
-import createError from "http-errors";
-import { Review, Product } from "../models";
+import reviewService from "../services/reviewService";
 
-const createReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  const { rating, comment } = req.body;
-  const { productId } = req.params;
-  const userId = req.user.id;
+class ReviewController {
+  async createReview(req: Request, res: Response) {
+    const { rating, comment } = req.body;
+    const { productId } = req.params;
+    const userId = req.user.id;
 
-  const product = await Product.findById(productId);
-  if (!product) {
-    return next(createError(404, "Product not found"));
+    const result = await reviewService.createReview(
+      productId,
+      userId,
+      rating,
+      comment
+    );
+    res.status(201).json(result);
   }
 
-  const newReview = new Review({
-    rating,
-    comment,
-    userId,
-    productId,
-  });
+  async getReviews(req: Request, res: Response) {
+    const { productId } = req.params;
+    const { page = "1", limit = "10" } = req.query;
 
-  await newReview.save();
-
-  // Update product's review details
-  await Review.updateProductReview(product._id);
-
-  res.status(201).json({ message: "Review created" });
-};
-
-const getReviews = async (req: Request, res: Response, next: NextFunction) => {
-  const { productId } = req.params;
-  const { page = "1", limit = "10" } = req.query;
-
-  const pageNumber = parseInt(page as string) || 10;
-  const limitNumber = parseInt(limit as string) || 10;
-  const skip = (pageNumber - 1) * limitNumber;
-
-  const product = await Product.findById(productId);
-  if (!product) {
-    return next(createError(404, "Product not found"));
+    const result = await reviewService.getReviews(
+      productId,
+      page as string,
+      limit as string
+    );
+    res.status(200).json(result);
   }
 
-  const reviews = await Review.find({ productId })
-    .populate({
-      path: "user",
-      select: "-_id familyName givenName userId",
-      options: { lean: true },
-    })
-    .select("-__v")
-    .sort({ createdAt: "desc" })
-    .skip(skip)
-    .limit(limitNumber)
-    .lean();
+  async getReviewById(req: Request, res: Response) {
+    const { reviewId, productId } = req.params;
 
-  const totalReviews = await Review.countDocuments({ productId });
-
-  res.status(200).json({
-    reviews,
-    pagination: {
-      currentPage: pageNumber,
-      totalPages: Math.ceil(totalReviews / limitNumber),
-      totalReviews: totalReviews,
-      limit: limitNumber,
-    },
-  });
-};
-
-const getReviewById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  const { reviewId, productId } = req.params;
-
-  const review = await Review.findOne({ _id: reviewId, productId })
-    .populate({
-      path: "user",
-      select: "-_id name userId",
-      options: { lean: true },
-    })
-    .select("rating comment user productId createdAt updatedAt")
-    .lean();
-
-  if (!review) {
-    return next(createError(404, "Review not found"));
+    const review = await reviewService.getReviewById(reviewId, productId);
+    res.status(200).json({ review });
   }
 
-  res.status(200).json({ review });
-};
+  async updateReview(req: Request, res: Response) {
+    const { reviewId, productId } = req.params;
+    const { rating, comment } = req.body;
 
-const updateReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  const { reviewId, productId } = req.params;
-  const { rating, comment } = req.body;
-
-  const review = await Review.findOne({ _id: reviewId, productId });
-  if (!review) {
-    return next(createError(404, "Review not found"));
+    const result = await reviewService.updateReview(
+      reviewId,
+      productId,
+      rating,
+      comment
+    );
+    res.status(200).json(result);
   }
 
-  review.rating = rating;
-  review.comment = comment;
+  async deleteReview(req: Request, res: Response) {
+    const { reviewId, productId } = req.params;
 
-  await review.save();
-
-  // Update product's review details
-  await Review.updateProductReview(review.productId);
-
-  res.status(200).json({ message: "Review updated" });
-};
-
-const deleteReview = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  const { reviewId, productId } = req.params;
-
-  const review = await Review.findOneAndDelete({ _id: reviewId, productId });
-  if (!review) {
-    return next(createError(404, "Review not found"));
+    const result = await reviewService.deleteReview(reviewId, productId);
+    res.status(200).json(result);
   }
+}
 
-  // Update product's review details
-  await Review.updateProductReview(review.productId);
-
-  res.status(200).json({ message: "Review deleted" });
-};
-
-export { getReviews, createReview, getReviewById, updateReview, deleteReview };
+export const reviewController = new ReviewController();

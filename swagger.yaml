@@ -10,10 +10,6 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
 
-servers:
-  - url: http://localhost:5000/api/v1
-    description: API server
-
 tags:
   - name: auth
     description: Authentication endpoints
@@ -2547,7 +2543,7 @@ components:
       type: object
       properties:
         message:
-          type: string
+          type: 
 
     User:
       type: object
@@ -2639,7 +2635,7 @@ components:
             publicId:
               type: string
         createdAt:
-          type: string
+          typstringe: string
           format: date-time
         updatedAt:
           type: string
@@ -3107,4 +3103,3 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Message"
-

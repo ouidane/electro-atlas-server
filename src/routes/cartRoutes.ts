@@ -1,36 +1,36 @@
 import express, { Router } from "express";
-import {
-  getCarts,
-  getCartById,
-  getItemById,
-  addItemToCart,
-  updateItemInCart,
-  deleteItemFromCart,
-  clearCart,
-} from "../controllers/cartController";
+import { cartController } from "../controllers/cartController";
 import {
   authenticateUser,
   authorizePermissions,
   authorizeCartAccess,
-} from "../middleware/premissions";
+} from "../middlewares/premissions";
 import { ROLE } from "../utils/constants";
 
 const router: Router = express.Router();
 
 router
   .route("/")
-  .get(authenticateUser, authorizePermissions(ROLE.ADMIN), getCarts);
+  .get(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    cartController.getCarts
+  );
 router
   .route("/:cartId")
-  .get(authenticateUser, authorizeCartAccess, getCartById);
+  .get(authenticateUser, authorizeCartAccess, cartController.getCartById);
 router
   .route("/:cartId/items")
-  .post(authenticateUser, authorizeCartAccess, addItemToCart)
-  .delete(authenticateUser, authorizeCartAccess, clearCart);
+  .post(authenticateUser, authorizeCartAccess, cartController.addItemToCart)
+  .delete(authenticateUser, authorizeCartAccess, cartController.clearCart);
 router
   .route("/:cartId/items/:itemId")
-  .get(authenticateUser, authorizeCartAccess, getItemById)
-  .patch(authenticateUser, authorizeCartAccess, updateItemInCart)
-  .delete(authenticateUser, authorizeCartAccess, deleteItemFromCart);
+  .get(authenticateUser, authorizeCartAccess, cartController.getItemById)
+  .patch(authenticateUser, authorizeCartAccess, cartController.updateItemInCart)
+  .delete(
+    authenticateUser,
+    authorizeCartAccess,
+    cartController.deleteItemFromCart
+  );
 
 export default router;

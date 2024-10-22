@@ -43,6 +43,7 @@
     "cors": "^2.8.5",
     "debug": "^4.3.6",
     "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-async-errors": "^3.1.1",
     "express-mongo-sanitize": "^2.2.0",
@@ -59,13 +60,16 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "redis": "^4.7.0",
+    "sharp": "^0.33.5",
     "stripe": "^16.5.0",
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.12.0",
     "winston": "^3.13.1",
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/ejs": "^3.1.5",
     "cross-env": "^7.0.3",
     "nodemon": "^3.1.4",
     "ts-node": "^10.9.2",

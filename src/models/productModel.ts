@@ -7,14 +7,14 @@ import {
   ProductSpecificationsDoc,
   ProductSpecificationsSchema,
 } from "./productSpecificationsModel";
-import { type ImageUrls } from "../@types/types";
+import { type ImageUrls } from "../types/types";
 
 // Define the interface for Product document
 export interface ProductDoc extends Document {
   name: string;
-  description: string;
+  description?: string;
   brand: string;
-  color?: string;
+  color: string;
   images?: ImageUrls[];
   reviews: {
     averageRating: number;

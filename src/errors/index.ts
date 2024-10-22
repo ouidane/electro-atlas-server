@@ -1,5 +1,5 @@
 import CustomAPIError from "./custom-api";
-import StockUnavailableError from "./stock-unavailable";
 import ValidationError from "./validation";
+import CloudinaryError from "./CloudinaryError";
 
-export { StockUnavailableError, ValidationError, CustomAPIError };
+export { ValidationError, CustomAPIError, CloudinaryError };

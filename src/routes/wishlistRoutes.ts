@@ -1,27 +1,44 @@
 import express, { Router } from "express";
-import {
-  getWishlists,
-  getWishlistById,
-  addItemToWishlist,
-  deleteItemFromWishlist,
-} from "../controllers/wishlistController";
+import { wishlistController } from "../controllers/wishlistController";
 import {
   authenticateUser,
   authorizePermissions,
   authorizeWishlistAccess,
-} from "../middleware/premissions";
+} from "../middlewares/premissions";
 import { ROLE } from "../utils/constants";
+import {
+  validateAddItem,
+  validateDeleteItem,
+} from "../middlewares/validateWishlist";
 
 const router: Router = express.Router();
 
 router
   .route("/")
-  .get(authenticateUser, authorizePermissions(ROLE.ADMIN), getWishlists);
+  .get(
+    authenticateUser,
+    authorizePermissions(ROLE.ADMIN),
+    wishlistController.getWishlists
+  );
 
 router
   .route("/:wishlistId")
-  .get(authenticateUser, authorizeWishlistAccess, getWishlistById)
-  .post(authenticateUser, authorizeWishlistAccess, addItemToWishlist)
-  .delete(authenticateUser, authorizeWishlistAccess, deleteItemFromWishlist);
+  .get(
+    authenticateUser,
+    authorizeWishlistAccess,
+    wishlistController.getWishlistById
+  )
+  .post(
+    authenticateUser,
+    authorizeWishlistAccess,
+    validateAddItem,
+    wishlistController.addItemToWishlist
+  )
+  .delete(
+    authenticateUser,
+    authorizeWishlistAccess,
+    validateDeleteItem,
+    wishlistController.deleteItemFromWishlist
+  );
 
 export default router;
