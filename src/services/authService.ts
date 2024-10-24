@@ -62,11 +62,42 @@ class AuthService {
 
     if (!user.isVerified) {
       await this.resendVerificationEmail(user, platform);
-      throw createError(403, "Email not verified");
     }
   }
 
-  private async resendVerificationEmail(user: any, platform: PlatformValue): Promise<void> {
+  private async resendVerificationEmail(
+    user: any,
+    platform: PlatformValue
+  ): Promise<void> {
+    const codeExpirationTime = 60 * 1000; // 1 minute
+    const maxRequestsPerHour = 3;
+    const oneHour = 60 * 60 * 1000;
+    const currentTime = Date.now();
+
+    // Filter out old requests
+    const requestHistory = user.verificationTokenRequestHistory.filter(
+      (timestamp: number) => currentTime - timestamp < oneHour
+    );
+    user.verificationTokenRequestHistory = requestHistory;
+
+    // Limit the number of requests
+    if (user.verificationTokenRequestHistory.length >= maxRequestsPerHour) {
+      throw createError(
+        400,
+        "You've requested too many verification codes. Please try again later."
+      );
+    }
+
+    if (
+      user.verificationTokenExpirationDate >
+      new Date(Date.now() - codeExpirationTime)
+    ) {
+      throw createError(400, "Please wait before requesting another code");
+    }
+
+    // Add the current timestamp to the request history
+    user.verificationTokenRequestHistory.push(currentTime);
+
     const verificationCode = this.generateVerificationCode();
     const verificationToken = generateToken({
       verificationCode,
@@ -87,6 +118,8 @@ class AuthService {
       verificationCode,
       origin,
     });
+
+    throw createError(403, "Email not verified");
   }
 
   async verifyUserEmail(
