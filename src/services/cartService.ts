@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import createError from "http-errors";
 import { CartItem, Cart, Product } from "../models";
-import { buildSortOption } from "../utils/queryFilter";
+import { buildFilterOption, buildSortOption } from "../utils/queryFilter";
 import { FormattedItem } from "../types/types";
 
 class CartService {
@@ -9,24 +9,12 @@ class CartService {
     const {
       limit = 10,
       page = 1,
-      minAmount,
-      maxAmount,
-      minTotalProducts,
-      maxTotalProducts,
-      minTotalItems,
-      maxTotalItems,
       sort = "createdAt",
+      ...filters
     } = queryParams;
 
     const skip = (page - 1) * limit;
-    const query = this.buildCartQuery({
-      minAmount,
-      maxAmount,
-      minTotalProducts,
-      maxTotalProducts,
-      minTotalItems,
-      maxTotalItems,
-    });
+    const query = this.buildCartQuery(filters);
 
     const sortOptions = this.buildCartSort(sort);
 
@@ -93,10 +81,8 @@ class CartService {
    * Get formatted cart items
    */
   async getCartItems(cartId: string): Promise<FormattedItem[]> {
-    const objectId = new Types.ObjectId(cartId);
-
     const cartItems: FormattedItem[] = await CartItem.aggregate([
-      { $match: { cartId: objectId } },
+      { $match: { cartId: new Types.ObjectId(cartId) } },
       {
         $lookup: {
           from: "products",
@@ -210,20 +196,17 @@ class CartService {
   }
 
   // Private helper methods
-  private buildCartQuery(filters: Record<string, number>) {
-    const query: Record<string, any> = {};
+  private buildCartQuery(filters: Record<string, string>) {
+    const filterHandlers: any = {
+      minAmount: (v: string) => ({ amount: { $gte: v } }),
+      maxAmount: (v: string) => ({ amount: { $lte: v } }),
+      minTotalProducts: (v: string) => ({ totalProducts: { $gte: v } }),
+      maxTotalProducts: (v: string) => ({ totalProducts: { $lte: v } }),
+      minTotalItems: (v: string) => ({ totalItems: { $gte: v } }),
+      maxTotalItems: (v: string) => ({ totalItems: { $lte: v } }),
+    };
 
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined) {
-        const field = key.replace(/^(min|max)/, "").toLowerCase();
-        const operator = key.startsWith("min") ? "$gte" : "$lte";
-
-        query[field] = query[field] || {};
-        query[field][operator] = value;
-      }
-    });
-
-    return query;
+    return buildFilterOption(filters, filterHandlers);
   }
 
   private buildCartSort(sort: string) {

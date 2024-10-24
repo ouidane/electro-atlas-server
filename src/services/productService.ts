@@ -7,7 +7,7 @@ import {
   IMAGE_SIZES,
   ImageBuffer,
 } from "./cloudinaryService";
-import { buildSortOption } from "../utils/queryFilter";
+import { buildFilterOption, buildSortOption } from "../utils/queryFilter";
 
 class ProductService {
   private readonly CLOUDINARY_FOLDER = "r7skmjh9";
@@ -143,68 +143,111 @@ class ProductService {
     await Product.findByIdAndDelete(productId);
   }
 
-  private buildQueryObject(filters: any) {
-    const specifications = [
-      "ramSize",
-      "graphics",
-      "processor",
-      "cpuSpeed",
-      "cpuManufacturer",
-      "graphicsProcessorManufacturer",
-      "hardDriveSize",
-      "screenSize",
-      "resolution",
-      "storage",
-      "memory",
-      "cameraResolution",
-      "operatingSystem",
-      "audioOutput",
-      "connectivity",
-      "batteryLife",
-      "weight",
-      "sensors",
-      "waterResistance",
-      "fitnessTracking",
-      "sleepTracking",
-      "compatiblePlatforms",
-      "voiceControl",
-      "energyEfficiency",
-      "remoteControl",
-    ];
-
-    const queryObject: any = {}; // Initialize empty query object
+  private buildQueryObject(filters: { [key: string]: string } | undefined) {
+    const toObjectId = (id: string) => new Types.ObjectId(id);
 
     const filterHandlers: any = {
-      color: (value: string) => ({ $in: value.split(",") }),
-      brand: (value: string) => ({ $in: value.split(",") }),
-      query: (value: string) => ({ name: { $regex: new RegExp(value, "i") } }),
-      sellerId: (value: string) => ({
-        sellerId: new Types.ObjectId(value),
+      // Original filters
+      color: (v: string) => ({ $in: v.split(",") }),
+      brand: (v: string) => ({ $in: v.split(",") }),
+      query: (v: string) => ({ name: { $regex: new RegExp(v, "i") } }),
+      sellerId: (v: string) => ({ sellerId: toObjectId(v) }),
+      categoryId: (v: string) => ({ categoryId: toObjectId(v) }),
+      parentCategoryId: (v: string) => ({ parentCategoryId: toObjectId(v) }),
+      isFeatured: (v: string) => ({ isFeatured: v === "true" }),
+      minRating: (v: string) => ({ "reviews.averageRating": { $gte: v } }),
+      maxRating: (v: string) => ({ "reviews.averageRating": { $lte: v } }),
+      minPrice: (v: string) => ({ "variants.salePrice": { $gte: v } }),
+      maxPrice: (v: string) => ({ "variants.salePrice": { $lte: v } }),
+      isAvailable: (v: string) => ({ "variants.inventory": { $gte: 1 } }),
+      minStock: (v: string) => ({ "variants.inventory": { $gte: v } }),
+      maxStock: (v: string) => ({ "variants.inventory": { $lte: v } }),
+      minDiscount: (v: string) => ({ "variants.discountPercent": { $gte: v } }),
+      maxDiscount: (v: string) => ({ "variants.discountPercent": { $lte: v } }),
+      createdAfter: (v: string) => ({ createdAt: { $gte: new Date(v) } }),
+      createdBefore: (v: string) => ({ createdAt: { $lte: new Date(v) } }),
+      updatedAfter: (v: string) => ({ updatedAt: { $gte: new Date(v) } }),
+      updatedBefore: (v: string) => ({ updatedAt: { $lte: new Date(v) } }),
+
+      // Specifications handlers
+      ramSize: (v: string) => ({
+        "specifications.ramSize": { $in: v.split(",") },
       }),
-      categoryId: (value: string) => ({
-        categoryId: new Types.ObjectId(value),
+      graphics: (v: string) => ({
+        "specifications.graphics": { $in: v.split(",") },
       }),
-      parentCategoryId: (value: string) => ({
-        parentCategoryId: new Types.ObjectId(value),
+      processor: (v: string) => ({
+        "specifications.processor": { $in: v.split(",") },
       }),
-      lowestPrice: (value: string) => ({
-        "variants.salePrice": { $gte: parseInt(value) },
+      cpuSpeed: (v: string) => ({
+        "specifications.cpuSpeed": { $in: v.split(",") },
       }),
-      highestPrice: (value: string) => ({
-        "variants.salePrice": { $lte: parseInt(value) },
+      cpuManufacturer: (v: string) => ({
+        "specifications.cpuManufacturer": { $in: v.split(",") },
+      }),
+      graphicsProcessorManufacturer: (v: string) => ({
+        "specifications.graphicsProcessorManufacturer": { $in: v.split(",") },
+      }),
+      hardDriveSize: (v: string) => ({
+        "specifications.hardDriveSize": { $in: v.split(",") },
+      }),
+      screenSize: (v: string) => ({
+        "specifications.screenSize": { $in: v.split(",") },
+      }),
+      resolution: (v: string) => ({
+        "specifications.resolution": { $in: v.split(",") },
+      }),
+      storage: (v: string) => ({
+        "specifications.storage": { $in: v.split(",") },
+      }),
+      memory: (v: string) => ({
+        "specifications.memory": { $in: v.split(",") },
+      }),
+      cameraResolution: (v: string) => ({
+        "specifications.cameraResolution": { $in: v.split(",") },
+      }),
+      operatingSystem: (v: string) => ({
+        "specifications.operatingSystem": { $in: v.split(",") },
+      }),
+      audioOutput: (v: string) => ({
+        "specifications.audioOutput": { $in: v.split(",") },
+      }),
+      connectivity: (v: string) => ({
+        "specifications.connectivity": { $in: v.split(",") },
+      }),
+      batteryLife: (v: string) => ({
+        "specifications.batteryLife": { $in: v.split(",") },
+      }),
+      weight: (v: string) => ({
+        "specifications.weight": { $in: v.split(",") },
+      }),
+      sensors: (v: string) => ({
+        "specifications.sensors": { $in: v.split(",") },
+      }),
+      waterResistance: (v: string) => ({
+        "specifications.waterResistance": { $in: v.split(",") },
+      }),
+      fitnessTracking: (v: string) => ({
+        "specifications.fitnessTracking": { $in: v.split(",") },
+      }),
+      sleepTracking: (v: string) => ({
+        "specifications.sleepTracking": { $in: v.split(",") },
+      }),
+      compatiblePlatforms: (v: string) => ({
+        "specifications.compatiblePlatforms": { $in: v.split(",") },
+      }),
+      voiceControl: (v: string) => ({
+        "specifications.voiceControl": { $in: v.split(",") },
+      }),
+      energyEfficiency: (v: string) => ({
+        "specifications.energyEfficiency": { $in: v.split(",") },
+      }),
+      remoteControl: (v: string) => ({
+        "specifications.remoteControl": { $in: v.split(",") },
       }),
     };
 
-    for (const [key, value] of Object.entries(filters)) {
-      if (key in filterHandlers) {
-        Object.assign(queryObject, filterHandlers[key](value));
-      } else if (specifications.includes(key)) {
-        queryObject[`specifications.${key}`] = {
-          $in: (value as string).split(","),
-        };
-      }
-    }
-    return queryObject;
+    return buildFilterOption(filters, filterHandlers);
   }
 
   private buildSortCriteria(sort: string) {

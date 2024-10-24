@@ -2,7 +2,7 @@ import { Delivery } from "../models";
 import { DELIVERY_STATUS } from "../utils/constants";
 
 class DeliveryService {
-  async createNewDelivery(profile: any, orderId: unknown) {
+  async createDelivery(profile: any, orderId: unknown) {
     const twoDays = 2 * 24 * 60 * 60 * 1000;
     const estimatedDeliveryDate = new Date(Date.now() + twoDays);
 

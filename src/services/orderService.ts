@@ -35,13 +35,17 @@ class OrderService {
 
     const [orders, totalCount] = await Promise.all([
       Order.find({ userId })
-      .populate({ path: "orderItems", select: "-__v", options: { lean: true } })
-      .select("-__v")
-      .sort({ createdAt: "desc" })
-      .skip(skip)
-      .limit(limitNumber)
-      .lean(),
-      Order.countDocuments({ userId })
+        .populate({
+          path: "orderItems",
+          select: "-__v",
+          options: { lean: true },
+        })
+        .select("-__v")
+        .sort({ createdAt: "desc" })
+        .skip(skip)
+        .limit(limitNumber)
+        .lean(),
+      Order.countDocuments({ userId }),
     ]);
 
     return {
@@ -70,13 +74,17 @@ class OrderService {
 
     const [orders, totalCount] = await Promise.all([
       Order.find(query)
-      .populate({ path: "orderItems", select: "-__v", options: { lean: true } })
-      .select("-__v")
-      .sort({ createdAt: "desc" })
-      .skip(skip)
-      .limit(limitNumber)
-      .lean(),
-      Order.countDocuments(query)
+        .populate({
+          path: "orderItems",
+          select: "-__v",
+          options: { lean: true },
+        })
+        .select("-__v")
+        .sort({ createdAt: "desc" })
+        .skip(skip)
+        .limit(limitNumber)
+        .lean(),
+      Order.countDocuments(query),
     ]);
 
     return {
@@ -102,8 +110,8 @@ class OrderService {
 
     return order;
   }
-  
-  async createNewOrder({ paymentId, session }: any) {
+
+  async createOrder({ paymentId, session }: any) {
     const cartId = session.metadata!.cartId;
     const userId = session.metadata!.userId;
     const totalAmount = session.amount_total! / 100;

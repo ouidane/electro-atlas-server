@@ -51,15 +51,12 @@ export class PaymentService {
       const cartId = session.metadata!.cartId;
       const profile = JSON.parse(session.metadata!.profile);
 
-      const paymentId = await this.createNewPayment(
+      const paymentId = await this.createPayment(
         session,
         PAYMENT_STATUS.COMPLETED
       );
-      const order = await orderService.createNewOrder({ session, paymentId });
-      const delivery = await deliveryService.createNewDelivery(
-        profile,
-        order._id
-      );
+      const order = await orderService.createOrder({ session, paymentId });
+      const delivery = await deliveryService.createDelivery(profile, order._id);
 
       await Promise.all([
         cartService.clearCartById(cartId),
@@ -75,7 +72,7 @@ export class PaymentService {
     }
   }
 
-  async createNewPayment(session: Stripe.Checkout.Session, status: string) {
+  async createPayment(session: Stripe.Checkout.Session, status: string) {
     const payment = await Payment.create({
       amountTotal: session.amount_total! / 100,
       paymentStatus: status,

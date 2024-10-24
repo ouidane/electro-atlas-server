@@ -27,12 +27,7 @@ app.use(platformMiddleware);
 app.use(sessionMiddleware);
 if (appConfig.environment !== "dev") {
   app.set("trust proxy", 1);
-  app.use(
-    limiter({
-      windowMs: 15 * 60 * 1000,
-      max: 90,
-    })
-  );
+  app.use(limiter({ windowMs: 15 * 60 * 1000, max: 90 }));
   app.use(helmet());
   app.use(mongoSanitize());
 }

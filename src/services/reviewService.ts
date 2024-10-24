@@ -36,19 +36,20 @@ export class ReviewService {
     const limitNumber = parseInt(limit) || 10;
     const skip = (pageNumber - 1) * limitNumber;
 
-    const reviews = await Review.find({ productId })
-      .populate({
-        path: "user",
-        select: "-_id familyName givenName userId",
-        options: { lean: true },
-      })
-      .select("-__v")
-      .sort({ createdAt: "desc" })
-      .skip(skip)
-      .limit(limitNumber)
-      .lean();
-
-    const totalReviews = await Review.countDocuments({ productId });
+    const [reviews, totalReviews] = await Promise.all([
+      Review.find({ productId })
+        .populate({
+          path: "user",
+          select: "-_id familyName givenName userId",
+          options: { lean: true },
+        })
+        .select("-__v")
+        .sort({ createdAt: "desc" })
+        .skip(skip)
+        .limit(limitNumber)
+        .lean(),
+      Review.countDocuments({ productId }),
+    ]);
 
     return {
       reviews,

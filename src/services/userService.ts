@@ -18,34 +18,30 @@ export class UserService {
 
   private usersFilterQuery(filters: { [key: string]: string }) {
     const filterHandlers = {
-      platform: (value: string) => ({ platform: { $in: value.split(",") } }),
-      isVerified: (value: string) => ({ isVerified: value === "true" }),
-      role: (value: string) => ({ role: { $in: value.split(",") } }),
-      city: (value: string) => ({ "profile.city": { $in: value.split(",") } }),
-      country: (value: string) => ({
-        "profile.country": { $in: value.split(",") },
-      }),
-      query: (value: string) => ({
+      platform: (v: string) => ({ platform: { $in: v.split(",") } }),
+      isVerified: (v: string) => ({ isVerified: v === "true" }),
+      role: (v: string) => ({ role: { $in: v.split(",") } }),
+      city: (v: string) => ({ "profile.city": { $in: v.split(",") } }),
+      country: (v: string) => ({ "profile.country": { $in: v.split(",") } }),
+      createdAfter: (v: string) => ({ createdAt: { $gte: new Date(v) } }),
+      createdBefore: (v: string) => ({ createdAt: { $lte: new Date(v) } }),
+      updatedAfter: (v: string) => ({ updatedAt: { $gte: new Date(v) } }),
+      updatedBefore: (v: string) => ({ updatedAt: { $lte: new Date(v) } }),
+      query: (v: string) => ({
         $or: [
-          { "profile.fullName": { $regex: new RegExp(value, "i") } },
-          { "profile.phone": { $regex: new RegExp(value, "i") } },
-          { email: { $regex: new RegExp(value, "i") } },
+          { "profile.fullName": { $regex: new RegExp(v, "i") } },
+          { "profile.phone": { $regex: new RegExp(v, "i") } },
+          { email: { $regex: new RegExp(v, "i") } },
         ],
       }),
-      createdAfter: (value: string) => ({ createdAt: { $gte: new Date(value) } }),
-      createdBefore: (value: string) => ({
-        createdAt: { $lte: new Date(value) },
-      }),
-      updatedAfter: (value: string) => ({ updatedAt: { $gte: new Date(value) } }),
-      updatedBefore: (value: string) => ({
-        updatedAt: { $lte: new Date(value) },
-      }),
-      hasProfile: (value: string) =>
-        value === "true"
+      hasProfile: (v: string) =>
+        v === "true"
           ? { profile: { $exists: true } }
           : { profile: { $exists: false } },
-      inActive: (value: string) => ({
-        updatedAt: { $lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30 * 6) },
+      inActive: (v: string) => ({
+        updatedAt: {
+          $lte: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30 * 6),
+        },
       }),
     };
     const filterKeys = buildFilterOption(filters, filterHandlers);
@@ -159,7 +155,10 @@ export class UserService {
     return user;
   }
 
-  public async updateProfileByUserId(userId: string, userData: IUserUpdateData) {
+  public async updateProfileByUserId(
+    userId: string,
+    userData: IUserUpdateData
+  ) {
     let profile = await Profile.findOne({ userId });
     if (!profile) {
       profile = new Profile({ userId });
