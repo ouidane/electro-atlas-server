@@ -57,11 +57,18 @@ const createGoogleStrategy = (
       // const picture = profile.photos?.[0].value;
       // const googleId = profile.id;
 
+      console.log("profile", profile);
+
       if (!email) {
         return done(new Error("Failed to obtain user email from Google"));
       }
 
+      console.log("email", email);
+
       const user = await User.findOne({ email, platform });
+
+      console.log("user", user);
+
       if (user) return done(null, user);
 
       const generatePassword = crypto.randomBytes(40).toString("hex");
@@ -73,6 +80,8 @@ const createGoogleStrategy = (
         isVerified: true,
         verified: new Date(),
       });
+
+      console.log("newUser", newUser);
 
       await Profile.create({
         givenName,
@@ -109,7 +118,7 @@ export default (passport: PassportStatic): void => {
       PLATFORMS.MARKETPLACE,
       authConfig.googleMarketplace.clientId,
       authConfig.googleMarketplace.clientSecret,
-      "/api/auth/google/marketplace/callback"
+      "/api/v1/auth/google/marketplace/callback"
     )
   );
 
@@ -119,7 +128,7 @@ export default (passport: PassportStatic): void => {
       PLATFORMS.VENDOR,
       authConfig.googleVendor.clientId,
       authConfig.googleVendor.clientSecret,
-      "/api/auth/google/vendor/callback"
+      "/api/v1/auth/google/vendor/callback"
     )
   );
 

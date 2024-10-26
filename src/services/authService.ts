@@ -62,26 +62,37 @@ class AuthService {
 
     if (!user.isVerified) {
       await this.resendVerificationEmail(user, platform);
+      throw createError(403, "Email not verified");
     }
   }
 
-  private async resendVerificationEmail(
-    user: any,
-    platform: PlatformValue
-  ): Promise<void> {
+  async resendVerificationCode(email: string, platform: PlatformValue) {
+    const user = await User.findOne({ email, platform });
+    if (!user) {
+      throw createError(404, "User not found");
+    }
+
+    if (user.isVerified) {
+      throw createError(400, "User is already verified");
+    }
+
+    await this.resendVerificationEmail(user, platform);
+  }
+
+  private async resendVerificationEmail(user: any, platform: PlatformValue) {
     const codeExpirationTime = 60 * 1000; // 1 minute
     const maxRequestsPerHour = 3;
     const oneHour = 60 * 60 * 1000;
     const currentTime = Date.now();
 
     // Filter out old requests
-    const requestHistory = user.verificationTokenRequestHistory.filter(
-      (timestamp: number) => currentTime - timestamp < oneHour
+    const requestHistory = user.verificationTokenRequestHistory?.filter(
+      (timestamp: Date) => currentTime - timestamp.getTime() < oneHour
     );
     user.verificationTokenRequestHistory = requestHistory;
 
     // Limit the number of requests
-    if (user.verificationTokenRequestHistory.length >= maxRequestsPerHour) {
+    if (user.verificationTokenRequestHistory!.length >= maxRequestsPerHour) {
       throw createError(
         400,
         "You've requested too many verification codes. Please try again later."
@@ -89,20 +100,19 @@ class AuthService {
     }
 
     if (
-      user.verificationTokenExpirationDate >
+      user.verificationTokenExpirationDate! >
       new Date(Date.now() - codeExpirationTime)
     ) {
       throw createError(400, "Please wait before requesting another code");
     }
 
     // Add the current timestamp to the request history
-    user.verificationTokenRequestHistory.push(currentTime);
+    user.verificationTokenRequestHistory?.push(new Date(currentTime));
 
     const verificationCode = this.generateVerificationCode();
     const verificationToken = generateToken({
       verificationCode,
       email: user.email,
-      createdAt: Date.now(),
     });
 
     const tenMinutes = 1000 * 60 * 10;
@@ -118,8 +128,6 @@ class AuthService {
       verificationCode,
       origin,
     });
-
-    throw createError(403, "Email not verified");
   }
 
   async verifyUserEmail(
@@ -154,6 +162,35 @@ class AuthService {
     if (!user) {
       throw createError(404, "User not found");
     }
+
+    const codeExpirationTime = 60 * 1000;
+    const maxRequestsPerMonth = 3;
+    const oneMonth = 30 * 24 * 60 * 60 * 1000;
+    const currentTime = Date.now();
+
+    // Filter out old requests
+    const requestHistory = user.passwordTokenRequestHistory?.filter(
+      (timestamp: Date) => currentTime - timestamp.getTime() < oneMonth
+    );
+    user.passwordTokenRequestHistory = requestHistory;
+
+    // Limit the number of requests
+    if (user.passwordTokenRequestHistory!.length >= maxRequestsPerMonth) {
+      throw createError(
+        400,
+        "You've requested too many reset password codes. Please try again later."
+      );
+    }
+
+    if (
+      user.passwordTokenExpirationDate! >
+      new Date(Date.now() - codeExpirationTime)
+    ) {
+      throw createError(400, "Please wait before requesting another code");
+    }
+
+    // Add the current timestamp to the request history
+    user.passwordTokenRequestHistory?.push(new Date(currentTime));
 
     const passwordToken = crypto.randomBytes(70).toString("hex");
     const resetToken = generateToken({ userId: user.id, passwordToken });

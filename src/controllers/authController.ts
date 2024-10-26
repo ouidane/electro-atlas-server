@@ -6,7 +6,7 @@ import { ORIGINS, type PlatformValue } from "../utils/constants";
 
 class AuthController {
   // Handler for the register endpoint
-  async register(req: Request, res: Response, next: NextFunction) {
+  async register(req: Request, res: Response) {
     const platform = req.platform;
 
     await authService.registerUser(req.body, platform);
@@ -43,7 +43,7 @@ class AuthController {
   }
 
   // Handler for the verify Email endpoint
-  async verifyEmail(req: Request, res: Response, next: NextFunction) {
+  async verifyEmail(req: Request, res: Response) {
     const { verificationCode, email } = req.body;
     const platform = req.platform;
 
@@ -51,8 +51,17 @@ class AuthController {
     res.status(200).json({ message: "Email Verified" });
   }
 
+  // Resend verification code endpoint
+  async resendVerificationCode(req: Request, res: Response) {
+    const { email } = req.body;
+    const platform = req.platform;
+
+    await authService.resendVerificationCode(email, platform);
+    res.status(200).json({ message: "Verification code resent successfully" });
+  }
+
   // Handler for the forgot password endpoint
-  async forgotPassword(req: Request, res: Response, next: NextFunction) {
+  async forgotPassword(req: Request, res: Response) {
     const { email } = req.body;
     const platform = req.platform;
 
@@ -61,7 +70,7 @@ class AuthController {
   }
 
   // Handler for the reset password endpoint
-  async resetPassword(req: Request, res: Response, next: NextFunction) {
+  async resetPassword(req: Request, res: Response) {
     const { resetToken, password } = req.body;
 
     await authService.resetUserPassword(resetToken, password);
@@ -72,21 +81,22 @@ class AuthController {
   async initiateGoogleAuth(req: Request, res: Response, next: NextFunction) {
     const platform = req.platform;
     const redirectUrl = req.query.callbackUrl || "/";
-
-    const data = JSON.stringify({ redirectUrl, platform });
+    console.log("redirectUrl", redirectUrl);
+    console.log("platform", platform);
 
     passport.authenticate(`google-${platform}`, {
       scope: ["profile", "email"],
-      state: encodeURIComponent(data),
+      state: encodeURIComponent(redirectUrl as string),
     })(req, res, next);
   }
 
   // Google Authentication Callback
   async googleAuthCallback(req: Request, res: Response, next: NextFunction) {
     const state = req.query.state as string;
-    const data = decodeURIComponent(state);
-    const { redirectUrl, platform } = JSON.parse(data);
-    const origin = ORIGINS[platform as PlatformValue];
+    const platform = req.params.platform as PlatformValue;
+
+    const redirectUrl = decodeURIComponent(state);
+    const origin = ORIGINS[platform];
 
     passport.authenticate(
       `google-${platform}`,

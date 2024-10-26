@@ -18,6 +18,7 @@ export interface UserDoc extends Document {
   verified?: Date;
   passwordToken?: string;
   passwordTokenExpirationDate?: Date;
+  passwordTokenRequestHistory?: Date[];
   verificationToken?: string;
   verificationTokenExpirationDate?: Date;
   verificationTokenRequestHistory?: Date[];
@@ -70,6 +71,7 @@ const UserSchema = new Schema<UserDoc>(
     verified: { type: Date },
     passwordToken: { type: String },
     passwordTokenExpirationDate: { type: Date },
+    passwordTokenRequestHistory: { type: [Date], default: [] },
     verificationToken: { type: String },
     verificationTokenExpirationDate: {
       type: Date,
