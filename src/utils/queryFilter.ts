@@ -15,7 +15,7 @@ interface FilterHandler {
   (value: string): { [key: string]: any };
 }
 
-interface FilterHandlers {
+export interface FilterHandlers {
   [key: string]: FilterHandler;
 }
 
