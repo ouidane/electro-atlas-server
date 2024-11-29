@@ -33,14 +33,11 @@ class SpecialProductController {
   }
 
   async productFilters(req: Request, res: Response, next: NextFunction) {
-    const { parentCategoryId, categoryId } = req.query;
-
-    if (!parentCategoryId) {
-      return next(createError(400, "parentCategoryId is required"));
-    }
+    const { parentCategoryId } = req.params;
+    const { categoryId } = req.query;
 
     const filters = await specialProductService.getProductFilters(
-      parentCategoryId as string,
+      parentCategoryId,
       categoryId as string
     );
 

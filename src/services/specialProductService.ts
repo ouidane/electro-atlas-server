@@ -149,17 +149,16 @@ class SpecialProductService {
   }
 
   async getProductFilters(parentCategoryId: string, categoryId?: string) {
-    const matchStage = {
-      $match: {
-        parentCategoryId: new Types.ObjectId(parentCategoryId as string),
-        ...(categoryId
-          ? { categoryId: new Types.ObjectId(categoryId as string) }
-          : {}),
-      },
+    const matchStage: any = {
+      parentCategoryId: new Types.ObjectId(parentCategoryId),
     };
 
+    if (categoryId) {
+      matchStage.categoryId = new Types.ObjectId(categoryId);
+    }
+
     const result = await Product.aggregate([
-      matchStage,
+      { $match: matchStage },
       { $unwind: "$variants" },
       {
         $facet: {
@@ -236,7 +235,7 @@ class SpecialProductService {
     };
 
     if (categoryId) {
-      baseQuery.categoryId = categoryId;
+      baseQuery.categoryId = new Types.ObjectId(categoryId);
     }
 
     if (excludeProductId) {

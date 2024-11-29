@@ -9,6 +9,8 @@ router.route("/live-search").get(specialProductController.liveSearch);
 router
   .route("/recommended-products")
   .get(specialProductController.recommendedProducts);
-router.route("/product-filters").get(specialProductController.productFilters);
+router
+  .route("/product-filters/:parentCategoryId")
+  .get(specialProductController.productFilters);
 
 export default router;
