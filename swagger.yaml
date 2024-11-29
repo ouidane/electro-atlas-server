@@ -713,7 +713,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     patch:
       tags: [categories]
-      summary: Update a parent category by ID
+      summary: Update a parent category by ID (Admin only)
       security:
         - sessionAuth: []
       parameters:
@@ -2418,6 +2418,8 @@ paths:
     get:
       tags: [orders]
       summary: Get all orders (Admin only)
+      security:
+        - sessionAuth: []
       parameters:
         - name: userId
           in: query
@@ -2464,6 +2466,8 @@ paths:
     get:
       tags: [orders]
       summary: Get orders for the authenticated buyer
+      security:
+        - sessionAuth: []
       parameters:
         - name: limit
           in: query
@@ -2504,6 +2508,8 @@ paths:
     get:
       tags: [orders]
       summary: Get order by ID
+      security:
+        - sessionAuth: []
       parameters:
         - name: orderId
           in: path
