@@ -7,7 +7,11 @@ import {
   IMAGE_SIZES,
   ImageBuffer,
 } from "./cloudinaryService";
-import { buildFilterOption, buildSortOption } from "../utils/queryFilter";
+import {
+  buildFilterOption,
+  buildSortOption,
+  FilterHandlers,
+} from "../utils/queryFilter";
 
 class ProductService {
   private readonly CLOUDINARY_FOLDER = "r7skmjh9";
@@ -146,103 +150,87 @@ class ProductService {
   private buildQueryObject(filters: { [key: string]: string } | undefined) {
     const toObjectId = (id: string) => new Types.ObjectId(id);
 
-    const filterHandlers: any = {
+    const filterHandlers: FilterHandlers = {
       // Original filters
-      color: (v: string) => ({ $in: v.split(",") }),
-      brand: (v: string) => ({ $in: v.split(",") }),
-      query: (v: string) => ({ name: { $regex: new RegExp(v, "i") } }),
-      sellerId: (v: string) => ({ sellerId: toObjectId(v) }),
-      categoryId: (v: string) => ({ categoryId: toObjectId(v) }),
-      parentCategoryId: (v: string) => ({ parentCategoryId: toObjectId(v) }),
-      isFeatured: (v: string) => ({ isFeatured: v === "true" }),
-      minRating: (v: string) => ({ "reviews.averageRating": { $gte: v } }),
-      maxRating: (v: string) => ({ "reviews.averageRating": { $lte: v } }),
-      minPrice: (v: string) => ({ "variants.salePrice": { $gte: v } }),
-      maxPrice: (v: string) => ({ "variants.salePrice": { $lte: v } }),
-      isAvailable: (v: string) => ({ "variants.inventory": { $gte: 1 } }),
-      minStock: (v: string) => ({ "variants.inventory": { $gte: v } }),
-      maxStock: (v: string) => ({ "variants.inventory": { $lte: v } }),
-      minDiscount: (v: string) => ({ "variants.discountPercent": { $gte: v } }),
-      maxDiscount: (v: string) => ({ "variants.discountPercent": { $lte: v } }),
-      createdAfter: (v: string) => ({ createdAt: { $gte: new Date(v) } }),
-      createdBefore: (v: string) => ({ createdAt: { $lte: new Date(v) } }),
-      updatedAfter: (v: string) => ({ updatedAt: { $gte: new Date(v) } }),
-      updatedBefore: (v: string) => ({ updatedAt: { $lte: new Date(v) } }),
+      color: (v) => ({ $in: v.split(",") }),
+      brand: (v) => ({ $in: v.split(",") }),
+      query: (v) => ({ name: { $regex: new RegExp(v, "i") } }),
+      sellerId: (v) => ({ sellerId: toObjectId(v) }),
+      categoryId: (v) => ({ categoryId: toObjectId(v) }),
+      parentCategoryId: (v) => ({ parentCategoryId: toObjectId(v) }),
+      isFeatured: (v) => ({ isFeatured: v === "true" }),
+      minRating: (v) => ({ "reviews.averageRating": { $gte: v } }),
+      maxRating: (v) => ({ "reviews.averageRating": { $lte: v } }),
+      minPrice: (v) => ({ "variants.salePrice": { $gte: v } }),
+      maxPrice: (v) => ({ "variants.salePrice": { $lte: v } }),
+      isAvailable: (v) => ({ "variants.inventory": { $gte: 1 } }),
+      minStock: (v) => ({ "variants.inventory": { $gte: v } }),
+      maxStock: (v) => ({ "variants.inventory": { $lte: v } }),
+      minDiscount: (v) => ({ "variants.discountPercent": { $gte: v } }),
+      maxDiscount: (v) => ({ "variants.discountPercent": { $lte: v } }),
+      createdAfter: (v) => ({ createdAt: { $gte: new Date(v) } }),
+      createdBefore: (v) => ({ createdAt: { $lte: new Date(v) } }),
+      updatedAfter: (v) => ({ updatedAt: { $gte: new Date(v) } }),
+      updatedBefore: (v) => ({ updatedAt: { $lte: new Date(v) } }),
 
       // Specifications handlers
-      ramSize: (v: string) => ({
-        "specifications.ramSize": { $in: v.split(",") },
-      }),
-      graphics: (v: string) => ({
-        "specifications.graphics": { $in: v.split(",") },
-      }),
-      processor: (v: string) => ({
-        "specifications.processor": { $in: v.split(",") },
-      }),
-      cpuSpeed: (v: string) => ({
-        "specifications.cpuSpeed": { $in: v.split(",") },
-      }),
-      cpuManufacturer: (v: string) => ({
+      ramSize: (v) => ({ "specifications.ramSize": { $in: v.split(",") } }),
+      graphics: (v) => ({ "specifications.graphics": { $in: v.split(",") } }),
+      processor: (v) => ({ "specifications.processor": { $in: v.split(",") } }),
+      cpuSpeed: (v) => ({ "specifications.cpuSpeed": { $in: v.split(",") } }),
+      cpuManufacturer: (v) => ({
         "specifications.cpuManufacturer": { $in: v.split(",") },
       }),
-      graphicsProcessorManufacturer: (v: string) => ({
+      graphicsProcessorManufacturer: (v) => ({
         "specifications.graphicsProcessorManufacturer": { $in: v.split(",") },
       }),
-      hardDriveSize: (v: string) => ({
+      hardDriveSize: (v) => ({
         "specifications.hardDriveSize": { $in: v.split(",") },
       }),
-      screenSize: (v: string) => ({
+      screenSize: (v) => ({
         "specifications.screenSize": { $in: v.split(",") },
       }),
-      resolution: (v: string) => ({
+      resolution: (v) => ({
         "specifications.resolution": { $in: v.split(",") },
       }),
-      storage: (v: string) => ({
-        "specifications.storage": { $in: v.split(",") },
-      }),
-      memory: (v: string) => ({
-        "specifications.memory": { $in: v.split(",") },
-      }),
-      cameraResolution: (v: string) => ({
+      storage: (v) => ({ "specifications.storage": { $in: v.split(",") } }),
+      memory: (v) => ({ "specifications.memory": { $in: v.split(",") } }),
+      cameraResolution: (v) => ({
         "specifications.cameraResolution": { $in: v.split(",") },
       }),
-      operatingSystem: (v: string) => ({
+      operatingSystem: (v) => ({
         "specifications.operatingSystem": { $in: v.split(",") },
       }),
-      audioOutput: (v: string) => ({
+      audioOutput: (v) => ({
         "specifications.audioOutput": { $in: v.split(",") },
       }),
-      connectivity: (v: string) => ({
+      connectivity: (v) => ({
         "specifications.connectivity": { $in: v.split(",") },
       }),
-      batteryLife: (v: string) => ({
+      batteryLife: (v) => ({
         "specifications.batteryLife": { $in: v.split(",") },
       }),
-      weight: (v: string) => ({
-        "specifications.weight": { $in: v.split(",") },
-      }),
-      sensors: (v: string) => ({
-        "specifications.sensors": { $in: v.split(",") },
-      }),
-      waterResistance: (v: string) => ({
+      weight: (v) => ({ "specifications.weight": { $in: v.split(",") } }),
+      sensors: (v) => ({ "specifications.sensors": { $in: v.split(",") } }),
+      waterResistance: (v) => ({
         "specifications.waterResistance": { $in: v.split(",") },
       }),
-      fitnessTracking: (v: string) => ({
+      fitnessTracking: (v) => ({
         "specifications.fitnessTracking": { $in: v.split(",") },
       }),
-      sleepTracking: (v: string) => ({
+      sleepTracking: (v) => ({
         "specifications.sleepTracking": { $in: v.split(",") },
       }),
-      compatiblePlatforms: (v: string) => ({
+      compatiblePlatforms: (v) => ({
         "specifications.compatiblePlatforms": { $in: v.split(",") },
       }),
-      voiceControl: (v: string) => ({
+      voiceControl: (v) => ({
         "specifications.voiceControl": { $in: v.split(",") },
       }),
-      energyEfficiency: (v: string) => ({
+      energyEfficiency: (v) => ({
         "specifications.energyEfficiency": { $in: v.split(",") },
       }),
-      remoteControl: (v: string) => ({
+      remoteControl: (v) => ({
         "specifications.remoteControl": { $in: v.split(",") },
       }),
     };
@@ -319,9 +307,13 @@ class ProductService {
         );
         if (image) {
           arrangedImages.push(image);
+        } else {
+          throw createError(400, "Image publicId not found.");
         }
       }
       product.images = arrangedImages;
+    } else {
+      throw createError(400, "Invalid image order.");
     }
   }
 
