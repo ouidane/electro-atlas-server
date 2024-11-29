@@ -1,5 +1,6 @@
 import createError from "http-errors";
 import { Review, Product } from "../models";
+import { Types } from "mongoose";
 
 export class ReviewService {
   async createReview(
@@ -21,7 +22,7 @@ export class ReviewService {
     });
 
     await newReview.save();
-    await Review.updateProductReview(product._id);
+    await this.updateProductReview(productId);
 
     return { message: "Review created" };
   }
@@ -94,7 +95,7 @@ export class ReviewService {
     review.comment = comment;
 
     await review.save();
-    await Review.updateProductReview(review.productId);
+    await this.updateProductReview(productId);
 
     return { message: "Review updated" };
   }
@@ -105,9 +106,38 @@ export class ReviewService {
       throw createError(404, "Review not found");
     }
 
-    await Review.updateProductReview(review.productId);
+    await this.updateProductReview(productId);
 
     return { message: "Review deleted" };
+  }
+
+  private async updateProductReview(productId: string) {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw createError(404, "Product not found");
+    }
+
+    const reviews = await Review.find({ productId });
+
+    // Calculate total number of reviews and total rating
+    const totalReviews = reviews.length;
+    if (totalReviews === 0) {
+      product.reviews.numOfReviews = 0;
+      product.reviews.averageRating = 0;
+      product.reviews.rawAverageRating = 0;
+      await product.save();
+      return;
+    }
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = totalRating / totalReviews;
+
+    // Update product's review fields
+    product.reviews.numOfReviews = totalReviews;
+    product.reviews.averageRating = parseFloat(averageRating.toFixed(2));
+    product.reviews.rawAverageRating = Math.round(averageRating);
+
+    await product.save();
   }
 }
 
