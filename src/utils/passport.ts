@@ -3,8 +3,9 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { User, Profile } from "../models";
 import crypto from "crypto";
-import { PLATFORMS } from "./constants";
+import { PLATFORMS, ROLE } from "./constants";
 import { authConfig } from "../config/authConfig";
+import { pl } from "@faker-js/faker/.";
 
 declare module "express" {
   interface Request {
@@ -57,31 +58,23 @@ const createGoogleStrategy = (
       // const picture = profile.photos?.[0].value;
       // const googleId = profile.id;
 
-      console.log("profile", profile);
-
       if (!email) {
         return done(new Error("Failed to obtain user email from Google"));
       }
 
-      console.log("email", email);
-
       const user = await User.findOne({ email, platform });
-
-      console.log("user", user);
-
       if (user) return done(null, user);
 
       const generatePassword = crypto.randomBytes(40).toString("hex");
       const newUser = await User.create({
         platform,
         email,
+        role: platform === PLATFORMS.MARKETPLACE ? ROLE.BUYER : ROLE.SELLER,
         password: generatePassword,
         confirmPassword: generatePassword,
         isVerified: true,
         verified: new Date(),
       });
-
-      console.log("newUser", newUser);
 
       await Profile.create({
         givenName,

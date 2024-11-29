@@ -4,7 +4,12 @@ import crypto from "crypto";
 import { emailService } from "./emailService";
 import { cartService } from "./cartService";
 import { verifyToken, generateToken } from "../lib/jwt";
-import { ORIGINS, PLATFORMS, type PlatformValue } from "../utils/constants";
+import {
+  ORIGINS,
+  PLATFORMS,
+  ROLE,
+  type PlatformValue,
+} from "../utils/constants";
 import { wishlistService } from "./wishlistService";
 
 class AuthService {
@@ -32,6 +37,7 @@ class AuthService {
 
     const user = await User.create({
       platform,
+      role: platform === PLATFORMS.MARKETPLACE ? ROLE.BUYER : ROLE.SELLER,
       email,
       password,
       confirmPassword,
@@ -164,7 +170,7 @@ class AuthService {
     }
 
     const codeExpirationTime = 60 * 1000;
-    const maxRequestsPerMonth = 3;
+    const maxRequestsPerMonth = 4;
     const oneMonth = 30 * 24 * 60 * 60 * 1000;
     const currentTime = Date.now();
 

@@ -80,13 +80,11 @@ class AuthController {
   // Initiate Google Authentication
   async initiateGoogleAuth(req: Request, res: Response, next: NextFunction) {
     const platform = req.platform;
-    const redirectUrl = req.query.callbackUrl || "/";
-    console.log("redirectUrl", redirectUrl);
-    console.log("platform", platform);
+    const callbackUrl = (req.query.callbackUrl as string) || "/";
 
     passport.authenticate(`google-${platform}`, {
       scope: ["profile", "email"],
-      state: encodeURIComponent(redirectUrl as string),
+      state: encodeURIComponent(callbackUrl),
     })(req, res, next);
   }
 
