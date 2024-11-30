@@ -195,6 +195,28 @@ class CartService {
     ]);
   }
 
+  /**
+   * Method to find or create a cart
+   */
+  async findOrCreateCart(userId: any, options = {}) {
+    const defaultOptions = {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+    };
+
+    const result = await Cart.findOneAndUpdate(
+      { userId },
+      { userId },
+      {
+        ...defaultOptions,
+        ...options,
+      }
+    );
+
+    return result;
+  }
+
   // Private helper methods
   private buildCartQuery(filters: Record<string, string>) {
     const filterHandlers: any = {
