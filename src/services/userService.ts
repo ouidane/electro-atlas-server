@@ -3,19 +3,10 @@ import { User, Profile, Cart, Wishlist } from "../models";
 import { PLATFORMS, ROLE } from "../utils/constants";
 import { buildFilterOption, buildSortOption } from "../utils/queryFilter";
 import { IUserData, IUserQueryParams, IUserUpdateData } from "../types/types";
+import { cartService } from "./cartService";
+import { wishlistService } from "./wishlistService";
 
 export class UserService {
-  private static instance: UserService;
-
-  private constructor() {}
-
-  public static getInstance(): UserService {
-    if (!UserService.instance) {
-      UserService.instance = new UserService();
-    }
-    return UserService.instance;
-  }
-
   private usersFilterQuery(filters: { [key: string]: string }) {
     const filterHandlers = {
       platform: (v: string) => ({ platform: { $in: v.split(",") } }),
@@ -213,18 +204,22 @@ export class UserService {
   }
 
   public async getCurrentUserData(userId: string) {
-    const [user, cart, wishlist] = await Promise.all([
-      this.getUserById(userId),
-      Cart.findOne({ userId }).lean(),
-      Wishlist.findOne({ userId }).lean(),
+    const user = await this.getUserById(userId);
+    if (user?.role !== ROLE.BUYER) {
+      return { user };
+    }
+
+    const [cart, wishlist] = await Promise.all([
+      cartService.findOrCreateCart(userId),
+      wishlistService.findOrCreateWishlist(userId),
     ]);
 
     return {
       user,
-      cartId: cart?._id || undefined,
-      wishlistId: wishlist?._id || undefined,
+      cartId: cart?._id || null,
+      wishlistId: wishlist?._id || null,
     };
   }
 }
 
-export const userService = UserService.getInstance();
+export const userService = new UserService();
