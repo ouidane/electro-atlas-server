@@ -6,7 +6,7 @@ import { WishlistItemDoc } from "../models/wishlistModel";
 import { ProductDoc } from "../models/productModel";
 
 export class WishlistService {
-   async getWishlists(userId: string, page: number, limit: number) {
+  async getWishlists(userId: string, page: number, limit: number) {
     const skip = (page - 1) * limit;
 
     const wishlists = await Wishlist.find({ userId })
@@ -50,7 +50,7 @@ export class WishlistService {
     };
   }
 
-   async getWishlistById(wishlistId: string) {
+  async getWishlistById(wishlistId: string) {
     const wishlist = await Wishlist.findById(wishlistId)
       .populate({
         path: "items.product",
@@ -85,7 +85,26 @@ export class WishlistService {
     };
   }
 
-   async addItemToWishlist(wishlistId: string, productId: string, sku: string) {
+  async findOrCreateWishlist(userId: any, options = {}) {
+    const defaultOptions = {
+      upsert: true,
+      new: true,
+      setDefaultsOnInsert: true,
+    };
+
+    const result = await Wishlist.findOneAndUpdate(
+      { userId },
+      { userId },
+      {
+        ...defaultOptions,
+        ...options,
+      }
+    );
+
+    return result;
+  }
+
+  async addItemToWishlist(wishlistId: string, productId: string, sku: string) {
     const product = await Product.findById(productId);
     if (!product) {
       throw createError(404, "Product not found");
@@ -112,7 +131,11 @@ export class WishlistService {
     await wishlist.save();
   }
 
-   async deleteItemFromWishlist(wishlistId: string, productId: string, sku: string) {
+  async deleteItemFromWishlist(
+    wishlistId: string,
+    productId: string,
+    sku: string
+  ) {
     const wishlist = await Wishlist.findById(wishlistId);
     if (!wishlist) {
       throw createError(404, "Wishlist not found");
@@ -129,28 +152,28 @@ export class WishlistService {
     await wishlist.save();
   }
 
-   async addWishlistToDatabase(items: any[],userId: unknown) {
-        const wishlist = await Wishlist.create({ userId });
-      
-        if (!items || items.length === 0) {
-          return;
-        }
-      
-        for (const item of items) {
-          const product = await Product.findById(item.productId);
-          if (!product) {
-            continue; // Skip this item and proceed to the next
-          }
-          const variant = product.variants.find((v) => v.sku === item.sku);
-          if (!variant) {
-            continue;
-          }
-      
-          wishlist.items.push(item);
-        }
-      
-        await wishlist.save();
+  async addWishlistToDatabase(items: any[], userId: unknown) {
+    const wishlist = await Wishlist.create({ userId });
+
+    if (!items || items.length === 0) {
+      return;
+    }
+
+    for (const item of items) {
+      const product = await Product.findById(item.productId);
+      if (!product) {
+        continue; // Skip this item and proceed to the next
       }
+      const variant = product.variants.find((v) => v.sku === item.sku);
+      if (!variant) {
+        continue;
+      }
+
+      wishlist.items.push(item);
+    }
+
+    await wishlist.save();
+  }
 }
 
 export const wishlistService = new WishlistService();
