@@ -98,7 +98,7 @@ class OrderService {
     };
   }
 
-  async getOrderById(orderId: string): Promise<any> {
+  async getOrderById(orderId: unknown): Promise<any> {
     const order = await Order.findById(orderId)
       .populate({ path: "orderItems", select: "-__v", options: { lean: true } })
       .select("-__v")
@@ -169,7 +169,7 @@ class OrderService {
       order.totalAmount = total;
       await order.save();
 
-      return order;
+      return this.getOrderById(orderId);
     } catch (error) {
       throw new Error("Error updating order");
     }
