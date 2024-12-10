@@ -2,7 +2,6 @@ import Stripe from "stripe";
 import { type FormattedItem } from "../types/types";
 import { stripeClient, stripeWebhookSecret } from "../lib/stripe";
 
-
 export class StripeService {
   async createCustomer(user: any): Promise<Stripe.Customer> {
     try {
@@ -32,16 +31,24 @@ export class StripeService {
     try {
       const lineItems = this.createLineItems(items);
       const metadata = this.createSessionMetadata(profile, cartId);
-      const sessionOptions = this.createSessionOptions(customer.id, lineItems, metadata);
+      const sessionOptions = this.createSessionOptions(
+        customer.id,
+        lineItems,
+        metadata
+      );
 
-      const session = await stripeClient.checkout.sessions.create(sessionOptions);
+      const session = await stripeClient.checkout.sessions.create(
+        sessionOptions
+      );
       return session;
     } catch (error) {
       throw new Error("Error creating checkout session");
     }
   }
 
-  private createLineItems(items: FormattedItem[]): Stripe.Checkout.SessionCreateParams.LineItem[] {
+  private createLineItems(
+    items: FormattedItem[]
+  ): Stripe.Checkout.SessionCreateParams.LineItem[] {
     return items.map((item) => ({
       price_data: {
         currency: "mad",
@@ -58,7 +65,10 @@ export class StripeService {
     }));
   }
 
-  private createSessionMetadata(profile: any, cartId: any): { [key: string]: string } {
+  private createSessionMetadata(
+    profile: any,
+    cartId: any
+  ): { [key: string]: string } {
     return {
       profile: JSON.stringify(profile),
       cartId: cartId.toString(),
@@ -84,13 +94,24 @@ export class StripeService {
 
   verifyWebhookEvent(payload: string | Buffer, sig: string): Stripe.Event {
     try {
+      console.log("Payload type:", typeof payload);
+      console.log("Payload length:", payload.length);
+      console.log("Signature present:", !!sig);
+
       return stripeClient.webhooks.constructEvent(
         payload,
         sig,
         stripeWebhookSecret
       );
-    } catch (error) {
-      throw new Error("Error constructing event");
+    } catch (error: any) {
+      console.error("Full webhook error:", {
+        error: error.message,
+        stack: error.stack,
+        sig: sig?.substring(0, 10), // Log part of the signature
+        secretPresent: !!stripeWebhookSecret,
+      });
+      throw error;
+      // throw new Error("Error constructing event");
     }
   }
 
