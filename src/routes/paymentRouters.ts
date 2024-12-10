@@ -12,10 +12,6 @@ router.post(
 );
 
 // Webhook route with raw body handling
-router.post(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  paymentController.stripeWebhook
-);
+router.post("/webhook", paymentController.stripeWebhook);
 
 export default router;
