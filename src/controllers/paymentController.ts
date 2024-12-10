@@ -13,6 +13,7 @@ export class PaymentController {
   async stripeWebhook(req: Request, res: Response) {
     const sig = req.headers["stripe-signature"] as string;
 
+    console.log("Received signature:", req.headers["stripe-signature"]);
     console.log("Raw body:", req.body.toString());
 
     try {
