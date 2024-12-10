@@ -5,4 +5,6 @@ dotenv.config();
 const stripeSecretKey = process.env.STRIPE_KEY as string;
 export const stripeWebhookSecret = process.env.STRIPE_ENDPOINT_SECRET as string;
 
-export const stripeClient = new stripe(stripeSecretKey);
+export const stripeClient = new stripe(stripeSecretKey, {
+  apiVersion: "2024-06-20",
+});
