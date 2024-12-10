@@ -13,6 +13,8 @@ export class PaymentController {
   async stripeWebhook(req: Request, res: Response) {
     const sig = req.headers["stripe-signature"] as string;
 
+    console.log("Raw body:", req.body.toString());
+
     try {
       const event = stripeService.verifyWebhookEvent(req.body, sig);
       await paymentService.handleStripeEvent(event);
