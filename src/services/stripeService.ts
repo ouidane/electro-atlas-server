@@ -94,24 +94,13 @@ export class StripeService {
 
   verifyWebhookEvent(payload: string | Buffer, sig: string): Stripe.Event {
     try {
-      console.log("Payload type:", typeof payload);
-      console.log("Payload length:", payload.length);
-      console.log("Signature present:", !!sig);
-
       return stripeClient.webhooks.constructEvent(
         payload,
         sig,
         stripeWebhookSecret
       );
     } catch (error: any) {
-      console.error("Full webhook error:", {
-        error: error.message,
-        stack: error.stack,
-        sig: sig?.substring(0, 10), // Log part of the signature
-        secretPresent: !!stripeWebhookSecret,
-      });
-      throw error;
-      // throw new Error("Error constructing event");
+      throw new Error(`Error constructing event: ${error.message}`);
     }
   }
 
