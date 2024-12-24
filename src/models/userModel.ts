@@ -18,10 +18,10 @@ export interface UserDoc extends Document {
   verified?: Date;
   passwordToken?: string;
   passwordTokenExpirationDate?: Date;
-  passwordTokenRequestHistory?: Date[];
+  passwordTokenRequestHistory: Date[];
   verificationToken?: string;
   verificationTokenExpirationDate?: Date;
-  verificationTokenRequestHistory?: Date[];
+  verificationTokenRequestHistory: Date[];
   createdAt?: Date;
   updatedAt?: Date;
   comparePassword(password: string): Promise<boolean>;
@@ -73,10 +73,7 @@ const UserSchema = new Schema<UserDoc>(
     passwordTokenExpirationDate: { type: Date },
     passwordTokenRequestHistory: { type: [Date], default: [] },
     verificationToken: { type: String },
-    verificationTokenExpirationDate: {
-      type: Date,
-      default: new Date(Date.now() + 1000 * 60 * 10),
-    },
+    verificationTokenExpirationDate: { type: Date },
     verificationTokenRequestHistory: { type: [Date], default: [] },
   },
   {
