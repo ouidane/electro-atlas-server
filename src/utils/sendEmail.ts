@@ -1,5 +1,6 @@
 import nodemailer, { Transporter } from "nodemailer";
 import nodemailerConfig from "../config/nodemailerConfig";
+import { th } from "@faker-js/faker/.";
 
 type EmailContent = {
   to: string;
@@ -12,14 +13,18 @@ const sendEmail = async ({
   subject,
   html,
 }: EmailContent): Promise<void> => {
-  const transporter: Transporter = nodemailer.createTransport(nodemailerConfig);
-
-  await transporter.sendMail({
-    from: '"Electro Atlas" <no-reply@electroatlas.com>',
-    to,
-    subject,
-    html,
-  });
+  try {
+    const transporter: Transporter = nodemailer.createTransport(nodemailerConfig);
+  
+    await transporter.sendMail({
+      from: `"Electro Atlas" <${nodemailerConfig.auth.user}>`,
+      to,
+      subject,
+      html,
+    });
+  } catch (error) {
+    throw new Error("Error sending email: " + error);
+  }
 };
 
 export default sendEmail;
