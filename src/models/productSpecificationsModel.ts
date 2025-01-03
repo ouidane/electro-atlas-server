@@ -2,23 +2,23 @@ import { Document, Schema } from "mongoose";
 
 export interface ProductSpecificationsDoc extends Document {
   certifications: string;
-  ramSize?: number;
+  ramSize?: string;
   graphics?: string;
   processor?: string;
-  cpuSpeed?: number;
+  cpuSpeed?: string;
   cpuManufacturer?: string;
   graphicsProcessorManufacturer?: string;
-  hardDriveSize?: number;
-  screenSize?: number;
+  hardDriveSize?: string;
+  screenSize?: string;
   resolution?: string;
-  storage?: number;
-  memory?: number;
-  cameraResolution?: number;
+  storage?: string;
+  memory?: string;
+  cameraResolution?: string;
   operatingSystem?: string;
   audioOutput?: string;
   connectivity?: string;
-  batteryLife?: number;
-  weight?: number;
+  batteryLife?: string;
+  weight?: string;
   sensor?: string;
   waterResistance?: boolean;
   fitnessTracking?: boolean;
@@ -27,6 +27,11 @@ export interface ProductSpecificationsDoc extends Document {
   voiceControl?: boolean;
   energyEfficiency?: string;
   remoteControl?: boolean;
+
+  displayTechnology?: string;
+  dimensions?: string;
+  aspectRatio?: string;
+  refreshRate?: string;
 }
 
 export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
@@ -49,7 +54,7 @@ export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
       required: [true, "certifications is required."], // Certifications for product adherence (All categories)
     },
     ramSize: {
-      type: Number, // Random Access Memory size in GB (Computers, Smartphones & Tablets) - e.g. 16GB, 8GB
+      type: String, // Random Access Memory size in GB (Computers, Smartphones & Tablets) - e.g. 16GB, 8GB
     },
     graphics: {
       type: String, // Graphics processor information (Computers, Gaming Consoles) - e.g. NVIDIA GeForce RTX 3080, AMD Radeon RX 6900 XT
@@ -58,7 +63,7 @@ export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
       type: String, // Type of processor (Computers, Smartphones & Tablets) - e.g. Intel Core i7, AMD Ryzen 7
     },
     cpuSpeed: {
-      type: Number, // Processor speed in GHz (Computers, Smartphones & Tablets) - e.g. 3.6 GHz, 2.8 GHz
+      type: String, // Processor speed in GHz (Computers, Smartphones & Tablets) - e.g. 3.6 GHz, 2.8 GHz
     },
     cpuManufacturer: {
       type: String, // CPU manufacturer (Computers, Smartphones & Tablets) - e.g. AMD , Qualcomm
@@ -67,19 +72,19 @@ export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
       type: String, // Graphics processor manufacturer (Computers, Gaming Consoles) - e.g. AMD, NVIDIA
     },
     screenSize: {
-      type: Number, // Display size in inches (Computers, Smartphones & Tablets, TVs) - e.g. 6.7 inches, 10.1 inches
+      type: String, // Display size in inches (Computers, Smartphones & Tablets, TVs) - e.g. 6.7 inches, 10.1 inches
     },
     resolution: {
       type: String, // Display resolution (Computers, Smartphones & Tablets, TVs) - e.g. 1920x1080, 2560x1440
     },
     storage: {
-      type: Number, // Storage capacity in GB (Computers, Smartphones & Tablets, Cameras) - e.g. 256GB, 128GB
+      type: String, // Storage capacity in GB (Computers, Smartphones & Tablets, Cameras) - e.g. 256GB, 128GB
     },
     memory: {
-      type: Number, // Memory capacity in GB (Computers, Smartphones & Tablets, Cameras) - e.g. 8GB, 4GB
+      type: String, // Memory capacity in GB (Computers, Smartphones & Tablets, Cameras) - e.g. 8GB, 4GB
     },
     cameraResolution: {
-      type: Number, // Camera resolution in megapixels (Cameras, Smartphones & Tablets) - e.g. 12MP, 8MP
+      type: String, // Camera resolution in megapixels (Cameras, Smartphones & Tablets) - e.g. 12MP, 8MP
     },
     operatingSystem: {
       type: String, // Operating system used (Computers, Smartphones & Tablets) - e.g. Windows 11, Android 12
@@ -91,10 +96,10 @@ export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
       type: String, // Connectivity options (All categories requiring connectivity) - e.g. Bluetooth 5.0, Wi-Fi 6
     },
     batteryLife: {
-      type: Number, // Battery life in hours (Smartphones & Tablets, Wearable Technology, Computers) - e.g. 10 hours, 15 hours
+      type: String, // Battery life in hours (Smartphones & Tablets, Wearable Technology, Computers) - e.g. 10 hours, 15 hours
     },
     weight: {
-      type: Number, // Device weight in Kg (Smartphones & Tablets, Wearable Technology) - e.g. 1Kg, 1.5Kg
+      type: String, // Device weight in Kg (Smartphones & Tablets, Wearable Technology) - e.g. 1Kg, 1.5Kg
     },
     sensor: {
       type: String, // Included sensors (Wearable Technology) - e.g. Heart Rate, GPS, Accelerometer
@@ -119,6 +124,19 @@ export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
     },
     remoteControl: {
       type: Boolean, // Remote control capability (Smart Home Devices, Gaming Consoles)
+    },
+
+    displayTechnology: {
+      type: String,
+    },
+    dimensions: {
+      type: String,
+    },
+    aspectRatio: {
+      type: String,
+    },
+    refreshRate: {
+      type: String,
     },
   }
 );
