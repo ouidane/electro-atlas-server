@@ -2237,7 +2237,7 @@ paths:
       parameters:
         - name: parentCategoryId
           in: query
-          required: true
+          required: false
           description: The ID of the parent category.
           schema:
             type: string
