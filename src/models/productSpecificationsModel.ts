@@ -2,141 +2,244 @@ import { Document, Schema } from "mongoose";
 
 export interface ProductSpecificationsDoc extends Document {
   certifications: string;
-  ramSize?: string;
-  graphics?: string;
-  processor?: string;
-  cpuSpeed?: string;
-  cpuManufacturer?: string;
-  graphicsProcessorManufacturer?: string;
-  hardDriveSize?: string;
-  screenSize?: string;
-  resolution?: string;
-  storage?: string;
-  memory?: string;
-  cameraResolution?: string;
-  operatingSystem?: string;
-  audioOutput?: string;
-  connectivity?: string;
-  batteryLife?: string;
+  itemModelNumber?: string;
   weight?: string;
-  sensor?: string;
-  waterResistance?: boolean;
-  fitnessTracking?: boolean;
-  sleepTracking?: boolean;
-  compatiblePlatform?: string;
-  voiceControl?: boolean;
-  energyEfficiency?: string;
-  remoteControl?: boolean;
-
-  displayTechnology?: string;
   dimensions?: string;
+  connectivity?: string;
   aspectRatio?: string;
+  displayTechnology?: string;
   refreshRate?: string;
+  resolution?: string;
+  screenSize?: string;
+  CameraFrameRate?: string;
+  opticalZoom?: string;
+  meteringDescription?: string;
+  supportedFileFormat?: string;
+  maximumAperture?: string;
+  imageStabilization?: string;
+  maximumFocalLength?: string;
+  expandedIsoMinimum?: string;
+  photoSensorTechnology?: string;
+  maximumWebcamImageResolution?: string;
+  batteries?: string;
+  videoCaptureResolution?: string;
+  flashMemoryType?: string;
+  printingTechnology?: string;
+  printerOutput?: string;
+  maximumPrintSpeed?: string;
+  printerMediaSizeMaximum?: string;
+  printMedia?: string;
+  scannerType?: string;
+  compatibleDevices?: string;
+  displayType?: string;
+  sheetSize?: string;
+  zoom?: string;
+  digitalZoom?: string;
+  lensConstruction?: string;
+  lensType?: string;
+  videoOutput?: string;
+  photoSensorResolution?: string;
+  audioInput?: string;
+  audioOutputType?: string;
+  batteryAverageLife?: string;
+  sensorType?: string;
+  totalStillResolution?: string;
+  maximumImageSize?: string;
+  compatibleMountings?: string;
+  maxPrintspeedMonochrome?: string;
+  controllerType?: string;
+  shape?: string;
+  gps?: string;
+  chipsetBrand?: string;
+  videoOutputInterface?: string;
+  cacheSize?: string;
+  graphicsCardDescription?: string;
+  numberOfProcessors?: string;
+  hardDiskFormFactor?: string;
+  hardDiskDescription?: string;
+  installationType?: string;
+  movementDetectionTechnology?: string;
+  mediaType?: string;
+  colorDepth?: string;
+  standardSheetCapacity?: string;
+  opticalSensorTechnology?: string;
+  AudioEncoding?: string;
+  AudioOutputMode?: string;
+  TotalHdmiPorts?: string;
+  surroundSoundChannelConfiguration?: string;
+  careInstructions?: string;
+  speakerMaximumOutputPower?: string;
+  speakerMaximumVolume?: string;
+  fabricType?: string;
+  origin?: string;
+  operatingSystem?: string;
+  cellularTechnology?: string;
+  batteryPowerRating?: string;
+  batteryCapacity?: string;
+  wirelessNetworkTechnology?: string;
+  material?: string;
+  connectorType?: string;
+  inputVoltage?: string;
+  mountingType?: string;
+  humanInterfaceInput?: string;
+  WirelessCommunicationStandard?: string;
+  department?: string;
+  specificUsesForProduct?: string;
+  ramSize?: string;
+  ramMemoryTechnology?: string;
+  memorySpeed?: string;
+  cpuSpeed?: string;
+  cpuModel?: string;
+  cpuBrand?: string;
+  hardDriveInterface?: string;
+  hardDriveSize?: string;
+  hardDrive?: string;
+  graphicsCoprocessor?: string;
+  graphicsRamSize?: string;
+  compatiblePlatform?: string;
+  lockType?: string;
+  finishType?: string;
+  lampType?: string;
+  shadeColor?: string;
+  shadeMaterial?: string;
+  switchType?: string;
+  brightness?: string;
+  lightingMethod?: string;
+  controlType?: string;
+  controlMethod?: string;
+  bulbShapeSize?: string;
+  bulbBase?: string;
+  lightColor?: string;
+  capacity?: string;
+  cutType?: string;
+  telephoneType?: string;
+  powerSource?: string;
+  answeringSystemType?: string;
+  supportedInternetServices?: string;
+  memoryStorageCapacity?: string;
+  wirelessCarrier?: string;
+  formFactor?: string;
 }
 
 export const ProductSpecificationsSchema = new Schema<ProductSpecificationsDoc>(
   {
-    certifications: {
-      type: String,
-      enum: {
-        values: [
-          "ASTM Certified",
-          "Australian Made",
-          "Eco Friendly",
-          "Fair Trade",
-          "Made in Morocco",
-          "Swiss Made",
-          "Hong Kong Made",
-          "Made in Turkey",
-        ],
-        message: "certifications is required.",
-      },
-      required: [true, "certifications is required."], // Certifications for product adherence (All categories)
-    },
-    ramSize: {
-      type: String, // Random Access Memory size in GB (Computers, Smartphones & Tablets) - e.g. 16GB, 8GB
-    },
-    graphics: {
-      type: String, // Graphics processor information (Computers, Gaming Consoles) - e.g. NVIDIA GeForce RTX 3080, AMD Radeon RX 6900 XT
-    },
-    processor: {
-      type: String, // Type of processor (Computers, Smartphones & Tablets) - e.g. Intel Core i7, AMD Ryzen 7
-    },
-    cpuSpeed: {
-      type: String, // Processor speed in GHz (Computers, Smartphones & Tablets) - e.g. 3.6 GHz, 2.8 GHz
-    },
-    cpuManufacturer: {
-      type: String, // CPU manufacturer (Computers, Smartphones & Tablets) - e.g. AMD , Qualcomm
-    },
-    graphicsProcessorManufacturer: {
-      type: String, // Graphics processor manufacturer (Computers, Gaming Consoles) - e.g. AMD, NVIDIA
-    },
-    screenSize: {
-      type: String, // Display size in inches (Computers, Smartphones & Tablets, TVs) - e.g. 6.7 inches, 10.1 inches
-    },
-    resolution: {
-      type: String, // Display resolution (Computers, Smartphones & Tablets, TVs) - e.g. 1920x1080, 2560x1440
-    },
-    storage: {
-      type: String, // Storage capacity in GB (Computers, Smartphones & Tablets, Cameras) - e.g. 256GB, 128GB
-    },
-    memory: {
-      type: String, // Memory capacity in GB (Computers, Smartphones & Tablets, Cameras) - e.g. 8GB, 4GB
-    },
-    cameraResolution: {
-      type: String, // Camera resolution in megapixels (Cameras, Smartphones & Tablets) - e.g. 12MP, 8MP
-    },
-    operatingSystem: {
-      type: String, // Operating system used (Computers, Smartphones & Tablets) - e.g. Windows 11, Android 12
-    },
-    audioOutput: {
-      type: String, // Audio output details (Computers, Smartphones & Tablets, Audio Devices) - e.g. Dolby Atmos, DTS:X
-    },
-    connectivity: {
-      type: String, // Connectivity options (All categories requiring connectivity) - e.g. Bluetooth 5.0, Wi-Fi 6
-    },
-    batteryLife: {
-      type: String, // Battery life in hours (Smartphones & Tablets, Wearable Technology, Computers) - e.g. 10 hours, 15 hours
-    },
-    weight: {
-      type: String, // Device weight in Kg (Smartphones & Tablets, Wearable Technology) - e.g. 1Kg, 1.5Kg
-    },
-    sensor: {
-      type: String, // Included sensors (Wearable Technology) - e.g. Heart Rate, GPS, Accelerometer
-    },
-    waterResistance: {
-      type: Boolean, // Water resistance capability (Wearable Technology, Smartphones & Tablets)
-    },
-    fitnessTracking: {
-      type: Boolean, // Fitness tracking feature availability (Wearable Technology)
-    },
-    sleepTracking: {
-      type: Boolean, // Sleep tracking feature availability (Wearable Technology)
-    },
-    compatiblePlatform: {
-      type: String, // Compatible platforms (Smart Home Devices, Gaming Consoles) - e.g. Amazon Alexa, Google Assistant
-    },
-    voiceControl: {
-      type: Boolean, // Voice control feature availability (Smart Home Devices, Gaming Consoles)
-    },
-    energyEfficiency: {
-      type: String, // Energy efficiency certification (Smart Home Devices) - e.g. Energy Star Certified, Not certified
-    },
-    remoteControl: {
-      type: Boolean, // Remote control capability (Smart Home Devices, Gaming Consoles)
-    },
-
-    displayTechnology: {
-      type: String,
-    },
-    dimensions: {
-      type: String,
-    },
-    aspectRatio: {
-      type: String,
-    },
-    refreshRate: {
-      type: String,
-    },
+    certifications: { type: String },
+    itemModelNumber: { type: String },
+    weight: { type: String },
+    dimensions: { type: String },
+    connectivity: { type: String },
+    aspectRatio: { type: String },
+    displayTechnology: { type: String },
+    refreshRate: { type: String },
+    resolution: { type: String },
+    screenSize: { type: String },
+    CameraFrameRate: { type: String },
+    opticalZoom: { type: String },
+    meteringDescription: { type: String },
+    supportedFileFormat: { type: String },
+    maximumAperture: { type: String },
+    imageStabilization: { type: String },
+    maximumFocalLength: { type: String },
+    expandedIsoMinimum: { type: String },
+    photoSensorTechnology: { type: String },
+    maximumWebcamImageResolution: { type: String },
+    batteries: { type: String },
+    videoCaptureResolution: { type: String },
+    flashMemoryType: { type: String },
+    printingTechnology: { type: String },
+    printerOutput: { type: String },
+    maximumPrintSpeed: { type: String },
+    printerMediaSizeMaximum: { type: String },
+    printMedia: { type: String },
+    scannerType: { type: String },
+    compatibleDevices: { type: String },
+    displayType: { type: String },
+    sheetSize: { type: String },
+    zoom: { type: String },
+    digitalZoom: { type: String },
+    lensConstruction: { type: String },
+    lensType: { type: String },
+    videoOutput: { type: String },
+    photoSensorResolution: { type: String },
+    audioInput: { type: String },
+    audioOutputType: { type: String },
+    batteryAverageLife: { type: String },
+    sensorType: { type: String },
+    totalStillResolution: { type: String },
+    maximumImageSize: { type: String },
+    compatibleMountings: { type: String },
+    maxPrintspeedMonochrome: { type: String },
+    controllerType: { type: String },
+    shape: { type: String },
+    gps: { type: String },
+    chipsetBrand: { type: String },
+    videoOutputInterface: { type: String },
+    cacheSize: { type: String },
+    graphicsCardDescription: { type: String },
+    numberOfProcessors: { type: String },
+    hardDiskFormFactor: { type: String },
+    hardDiskDescription: { type: String },
+    installationType: { type: String },
+    movementDetectionTechnology: { type: String },
+    mediaType: { type: String },
+    colorDepth: { type: String },
+    standardSheetCapacity: { type: String },
+    opticalSensorTechnology: { type: String },
+    AudioEncoding: { type: String },
+    AudioOutputMode: { type: String },
+    TotalHdmiPorts: { type: String },
+    surroundSoundChannelConfiguration: { type: String },
+    careInstructions: { type: String },
+    speakerMaximumOutputPower: { type: String },
+    speakerMaximumVolume: { type: String },
+    fabricType: { type: String },
+    origin: { type: String },
+    operatingSystem: { type: String },
+    cellularTechnology: { type: String },
+    batteryPowerRating: { type: String },
+    batteryCapacity: { type: String },
+    wirelessNetworkTechnology: { type: String },
+    material: { type: String },
+    connectorType: { type: String },
+    inputVoltage: { type: String },
+    mountingType: { type: String },
+    humanInterfaceInput: { type: String },
+    WirelessCommunicationStandard: { type: String },
+    department: { type: String },
+    specificUsesForProduct: { type: String },
+    ramSize: { type: String },
+    ramMemoryTechnology: { type: String },
+    memorySpeed: { type: String },
+    cpuSpeed: { type: String },
+    cpuModel: { type: String },
+    cpuBrand: { type: String },
+    hardDriveInterface: { type: String },
+    hardDriveSize: { type: String },
+    hardDrive: { type: String },
+    graphicsCoprocessor: { type: String },
+    graphicsRamSize: { type: String },
+    compatiblePlatform: { type: String },
+    lockType: { type: String },
+    finishType: { type: String },
+    lampType: { type: String },
+    shadeColor: { type: String },
+    shadeMaterial: { type: String },
+    switchType: { type: String },
+    brightness: { type: String },
+    lightingMethod: { type: String },
+    controlType: { type: String },
+    controlMethod: { type: String },
+    bulbShapeSize: { type: String },
+    bulbBase: { type: String },
+    lightColor: { type: String },
+    capacity: { type: String },
+    cutType: { type: String },
+    telephoneType: { type: String },
+    powerSource: { type: String },
+    answeringSystemType: { type: String },
+    supportedInternetServices: { type: String },
+    memoryStorageCapacity: { type: String },
+    wirelessCarrier: { type: String },
+    formFactor: { type: String },
   }
 );

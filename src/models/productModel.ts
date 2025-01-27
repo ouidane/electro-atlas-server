@@ -12,9 +12,12 @@ import { type ImageUrls } from "../types/types";
 // Define the interface for Product document
 export interface ProductDoc extends Document {
   name: string;
-  description?: string;
+  description: string;
   brand: string;
-  color: string;
+  modelName?: string;
+  color?: string;
+  features?: string;
+  whatsInTheBox?: string;
   images?: ImageUrls[];
   reviews: {
     averageRating: number;
@@ -41,13 +44,13 @@ const ProductSchema = new Schema<ProductDoc>(
       trim: true,
       uppercase: true,
       required: [true, "Please provide product name"],
-      maxlength: [100, "Name can not be more than 100 characters"],
+      maxlength: [250, "Name can not be more than 100 characters"],
     },
     description: {
       type: String,
       trim: true,
       required: [true, "Please provide product description"],
-      maxlength: [1000, "Description can not be more than 1000 characters"],
+      maxlength: [8000, "Description can not be more than 1000 characters"],
     },
     brand: {
       type: String,
@@ -55,38 +58,22 @@ const ProductSchema = new Schema<ProductDoc>(
       uppercase: true,
       required: [true, "Please provide product brand"],
     },
-    color: {
-      type: String,
-    },
+    whatsInTheBox: { type: String },
+    modelName: { type: String },
+    color: { type: String },
+    features: { type: String },
     images: [
       {
-        publicId: {
-          type: String,
-        },
-        tiny: {
-          type: String,
-        },
-        medium: {
-          type: String,
-        },
-        large: {
-          type: String,
-        },
+        publicId: { type: String },
+        tiny: { type: String },
+        medium: { type: String },
+        large: { type: String },
       },
     ],
     reviews: {
-      averageRating: {
-        type: Number,
-        default: 0,
-      },
-      roundedAverage: {
-        type: Number,
-        default: 0,
-      },
-      numOfReviews: {
-        type: Number,
-        default: 0,
-      },
+      averageRating: { type: Number, default: 0 },
+      roundedAverage: { type: Number, default: 0 },
+      numOfReviews: { type: Number, default: 0 },
     },
     categoryId: {
       type: Schema.Types.ObjectId,
@@ -103,18 +90,9 @@ const ProductSchema = new Schema<ProductDoc>(
       ref: "User",
       required: true,
     },
-    popularity: {
-      type: Number,
-      default: 0,
-    },
-    salesCount: {
-      type: Number,
-      default: 0,
-    },
-    isFeatured: {
-      type: Boolean,
-      default: false,
-    },
+    popularity: { type: Number, default: 0 },
+    salesCount: { type: Number, default: 0 },
+    isFeatured: { type: Boolean, default: false },
     variants: [ProductVariantsSchema],
     specifications: ProductSpecificationsSchema,
   },

@@ -12,6 +12,7 @@ import {
   buildSortOption,
   FilterHandlers,
 } from "../utils/queryFilter";
+import { de } from "@faker-js/faker/.";
 
 class ProductService {
   private readonly CLOUDINARY_FOLDER = "r7skmjh9";
@@ -174,64 +175,307 @@ class ProductService {
       updatedBefore: (v) => ({ updatedAt: { $lte: new Date(v) } }),
 
       // Specifications handlers
-      ramSize: (v) => ({ "specifications.ramSize": { $in: v.split(",") } }),
-      graphics: (v) => ({ "specifications.graphics": { $in: v.split(",") } }),
-      processor: (v) => ({ "specifications.processor": { $in: v.split(",") } }),
-      cpuSpeed: (v) => ({ "specifications.cpuSpeed": { $in: v.split(",") } }),
-      cpuManufacturer: (v) => ({
-        "specifications.cpuManufacturer": { $in: v.split(",") },
+      connectivity: (v) => ({
+        "specifications.connectivity": { $in: v.split(",") },
       }),
-      graphicsProcessorManufacturer: (v) => ({
-        "specifications.graphicsProcessorManufacturer": { $in: v.split(",") },
+      aspectRatio: (v) => ({
+        "specifications.aspectRatio": { $in: v.split(",") },
       }),
-      hardDriveSize: (v) => ({
-        "specifications.hardDriveSize": { $in: v.split(",") },
+      displayTechnology: (v) => ({
+        "specifications.displayTechnology": { $in: v.split(",") },
       }),
-      screenSize: (v) => ({
-        "specifications.screenSize": { $in: v.split(",") },
+      refreshRate: (v) => ({
+        "specifications.refreshRate": { $in: v.split(",") },
       }),
       resolution: (v) => ({
         "specifications.resolution": { $in: v.split(",") },
       }),
-      storage: (v) => ({ "specifications.storage": { $in: v.split(",") } }),
-      memory: (v) => ({ "specifications.memory": { $in: v.split(",") } }),
-      cameraResolution: (v) => ({
-        "specifications.cameraResolution": { $in: v.split(",") },
+      screenSize: (v) => ({
+        "specifications.screenSize": { $in: v.split(",") },
       }),
+      CameraFrameRate: (v) => ({
+        "specifications.CameraFrameRate": { $in: v.split(",") },
+      }),
+      opticalZoom: (v) => ({
+        "specifications.opticalZoom": { $in: v.split(",") },
+      }),
+      meteringDescription: (v) => ({
+        "specifications.meteringDescription": { $in: v.split(",") },
+      }),
+      supportedFileFormat: (v) => ({
+        "specifications.supportedFileFormat": { $in: v.split(",") },
+      }),
+      maximumAperture: (v) => ({
+        "specifications.maximumAperture": { $in: v.split(",") },
+      }),
+      imageStabilization: (v) => ({
+        "specifications.imageStabilization": { $in: v.split(",") },
+      }),
+      maximumFocalLength: (v) => ({
+        "specifications.maximumFocalLength": { $in: v.split(",") },
+      }),
+      expandedIsoMinimum: (v) => ({
+        "specifications.expandedIsoMinimum": { $in: v.split(",") },
+      }),
+      photoSensorTechnology: (v) => ({
+        "specifications.photoSensorTechnology": { $in: v.split(",") },
+      }),
+      maximumWebcamImageResolution: (v) => ({
+        "specifications.maximumWebcamImageResolution": { $in: v.split(",") },
+      }),
+      videoCaptureResolution: (v) => ({
+        "specifications.videoCaptureResolution": { $in: v.split(",") },
+      }),
+      flashMemoryType: (v) => ({
+        "specifications.flashMemoryType": { $in: v.split(",") },
+      }),
+      printingTechnology: (v) => ({
+        "specifications.printingTechnology": { $in: v.split(",") },
+      }),
+      printerOutput: (v) => ({
+        "specifications.printerOutput": { $in: v.split(",") },
+      }),
+      maximumPrintSpeed: (v) => ({
+        "specifications.maximumPrintSpeed": { $in: v.split(",") },
+      }),
+      printerMediaSizeMaximum: (v) => ({
+        "specifications.printerMediaSizeMaximum": { $in: v.split(",") },
+      }),
+      printMedia: (v) => ({
+        "specifications.printMedia": { $in: v.split(",") },
+      }),
+      scannerType: (v) => ({
+        "specifications.scannerType": { $in: v.split(",") },
+      }),
+      compatibleDevices: (v) => ({
+        "specifications.compatibleDevices": { $in: v.split(",") },
+      }),
+      displayType: (v) => ({
+        "specifications.displayType": { $in: v.split(",") },
+      }),
+      sheetSize: (v) => ({ "specifications.sheetSize": { $in: v.split(",") } }),
+      zoom: (v) => ({ "specifications.zoom": { $in: v.split(",") } }),
+      digitalZoom: (v) => ({
+        "specifications.digitalZoom": { $in: v.split(",") },
+      }),
+      lensConstruction: (v) => ({
+        "specifications.lensConstruction": { $in: v.split(",") },
+      }),
+      lensType: (v) => ({ "specifications.lensType": { $in: v.split(",") } }),
+      videoOutput: (v) => ({
+        "specifications.videoOutput": { $in: v.split(",") },
+      }),
+      photoSensorResolution: (v) => ({
+        "specifications.photoSensorResolution": { $in: v.split(",") },
+      }),
+      audioInput: (v) => ({
+        "specifications.audioInput": { $in: v.split(",") },
+      }),
+      audioOutputType: (v) => ({
+        "specifications.audioOutputType": { $in: v.split(",") },
+      }),
+      batteryAverageLife: (v) => ({
+        "specifications.batteryAverageLife": { $in: v.split(",") },
+      }),
+      sensorType: (v) => ({
+        "specifications.sensorType": { $in: v.split(",") },
+      }),
+      totalStillResolution: (v) => ({
+        "specifications.totalStillResolution": { $in: v.split(",") },
+      }),
+      maximumImageSize: (v) => ({
+        "specifications.maximumImageSize": { $in: v.split(",") },
+      }),
+      compatibleMountings: (v) => ({
+        "specifications.compatibleMountings": { $in: v.split(",") },
+      }),
+      maxPrintspeedMonochrome: (v) => ({
+        "specifications.maxPrintspeedMonochrome": { $in: v.split(",") },
+      }),
+      controllerType: (v) => ({
+        "specifications.controllerType": { $in: v.split(",") },
+      }),
+      shape: (v) => ({ "specifications.shape": { $in: v.split(",") } }),
+      gps: (v) => ({ "specifications.gps": { $in: v.split(",") } }),
+      chipsetBrand: (v) => ({
+        "specifications.chipsetBrand": { $in: v.split(",") },
+      }),
+      videoOutputInterface: (v) => ({
+        "specifications.videoOutputInterface": { $in: v.split(",") },
+      }),
+      cacheSize: (v) => ({ "specifications.cacheSize": { $in: v.split(",") } }),
+      graphicsCardDescription: (v) => ({
+        "specifications.graphicsCardDescription": { $in: v.split(",") },
+      }),
+      numberOfProcessors: (v) => ({
+        "specifications.numberOfProcessors": { $in: v.split(",") },
+      }),
+      hardDiskFormFactor: (v) => ({
+        "specifications.hardDiskFormFactor": { $in: v.split(",") },
+      }),
+      hardDiskDescription: (v) => ({
+        "specifications.hardDiskDescription": { $in: v.split(",") },
+      }),
+      installationType: (v) => ({
+        "specifications.installationType": { $in: v.split(",") },
+      }),
+      movementDetectionTechnology: (v) => ({
+        "specifications.movementDetectionTechnology": { $in: v.split(",") },
+      }),
+      mediaType: (v) => ({ "specifications.mediaType": { $in: v.split(",") } }),
+      colorDepth: (v) => ({
+        "specifications.colorDepth": { $in: v.split(",") },
+      }),
+      standardSheetCapacity: (v) => ({
+        "specifications.standardSheetCapacity": { $in: v.split(",") },
+      }),
+      opticalSensorTechnology: (v) => ({
+        "specifications.opticalSensorTechnology": { $in: v.split(",") },
+      }),
+      AudioEncoding: (v) => ({
+        "specifications.AudioEncoding": { $in: v.split(",") },
+      }),
+      AudioOutputMode: (v) => ({
+        "specifications.AudioOutputMode": { $in: v.split(",") },
+      }),
+      TotalHdmiPorts: (v) => ({
+        "specifications.TotalHdmiPorts": { $in: v.split(",") },
+      }),
+      surroundSoundChannelConfiguration: (v) => ({
+        "specifications.surroundSoundChannelConfiguration": {
+          $in: v.split(","),
+        },
+      }),
+      careInstructions: (v) => ({
+        "specifications.careInstructions": { $in: v.split(",") },
+      }),
+      speakerMaximumOutputPower: (v) => ({
+        "specifications.speakerMaximumOutputPower": { $in: v.split(",") },
+      }),
+      speakerMaximumVolume: (v) => ({
+        "specifications.speakerMaximumVolume": { $in: v.split(",") },
+      }),
+      fabricType: (v) => ({
+        "specifications.fabricType": { $in: v.split(",") },
+      }),
+      origin: (v) => ({ "specifications.origin": { $in: v.split(",") } }),
       operatingSystem: (v) => ({
         "specifications.operatingSystem": { $in: v.split(",") },
       }),
-      audioOutput: (v) => ({
-        "specifications.audioOutput": { $in: v.split(",") },
+      cellularTechnology: (v) => ({
+        "specifications.cellularTechnology": { $in: v.split(",") },
       }),
-      connectivity: (v) => ({
-        "specifications.connectivity": { $in: v.split(",") },
+      batteryPowerRating: (v) => ({
+        "specifications.batteryPowerRating": { $in: v.split(",") },
       }),
-      batteryLife: (v) => ({
-        "specifications.batteryLife": { $in: v.split(",") },
+      batteryCapacity: (v) => ({
+        "specifications.batteryCapacity": { $in: v.split(",") },
       }),
-      weight: (v) => ({ "specifications.weight": { $in: v.split(",") } }),
-      sensors: (v) => ({ "specifications.sensors": { $in: v.split(",") } }),
-      waterResistance: (v) => ({
-        "specifications.waterResistance": { $in: v.split(",") },
+      wirelessNetworkTechnology: (v) => ({
+        "specifications.wirelessNetworkTechnology": { $in: v.split(",") },
       }),
-      fitnessTracking: (v) => ({
-        "specifications.fitnessTracking": { $in: v.split(",") },
+      material: (v) => ({ "specifications.material": { $in: v.split(",") } }),
+      connectorType: (v) => ({
+        "specifications.connectorType": { $in: v.split(",") },
       }),
-      sleepTracking: (v) => ({
-        "specifications.sleepTracking": { $in: v.split(",") },
+      inputVoltage: (v) => ({
+        "specifications.inputVoltage": { $in: v.split(",") },
       }),
-      compatiblePlatforms: (v) => ({
-        "specifications.compatiblePlatforms": { $in: v.split(",") },
+      mountingType: (v) => ({
+        "specifications.mountingType": { $in: v.split(",") },
       }),
-      voiceControl: (v) => ({
-        "specifications.voiceControl": { $in: v.split(",") },
+      humanInterfaceInput: (v) => ({
+        "specifications.humanInterfaceInput": { $in: v.split(",") },
       }),
-      energyEfficiency: (v) => ({
-        "specifications.energyEfficiency": { $in: v.split(",") },
+      WirelessCommunicationStandard: (v) => ({
+        "specifications.WirelessCommunicationStandard": { $in: v.split(",") },
       }),
-      remoteControl: (v) => ({
-        "specifications.remoteControl": { $in: v.split(",") },
+      department: (v) => ({
+        "specifications.department": { $in: v.split(",") },
+      }),
+      specificUsesForProduct: (v) => ({
+        "specifications.specificUsesForProduct": { $in: v.split(",") },
+      }),
+      ramSize: (v) => ({ "specifications.ramSize": { $in: v.split(",") } }),
+      ramMemoryTechnology: (v) => ({
+        "specifications.ramMemoryTechnology": { $in: v.split(",") },
+      }),
+      memorySpeed: (v) => ({
+        "specifications.memorySpeed": { $in: v.split(",") },
+      }),
+      cpuModel: (v) => ({ "specifications.cpuModel": { $in: v.split(",") } }),
+      cpuBrand: (v) => ({ "specifications.cpuBrand": { $in: v.split(",") } }),
+      hardDriveInterface: (v) => ({
+        "specifications.hardDriveInterface": { $in: v.split(",") },
+      }),
+      hardDriveSize: (v) => ({
+        "specifications.hardDriveSize": { $in: v.split(",") },
+      }),
+      hardDrive: (v) => ({ "specifications.hardDrive": { $in: v.split(",") } }),
+      graphicsCoprocessor: (v) => ({
+        "specifications.graphicsCoprocessor": { $in: v.split(",") },
+      }),
+      graphicsRamSize: (v) => ({
+        "specifications.graphicsRamSize": { $in: v.split(",") },
+      }),
+      compatiblePlatform: (v) => ({
+        "specifications.compatiblePlatform": { $in: v.split(",") },
+      }),
+      lockType: (v) => ({ "specifications.lockType": { $in: v.split(",") } }),
+      finishType: (v) => ({
+        "specifications.finishType": { $in: v.split(",") },
+      }),
+      lampType: (v) => ({ "specifications.lampType": { $in: v.split(",") } }),
+      shadeColor: (v) => ({
+        "specifications.shadeColor": { $in: v.split(",") },
+      }),
+      shadeMaterial: (v) => ({
+        "specifications.shadeMaterial": { $in: v.split(",") },
+      }),
+      switchType: (v) => ({
+        "specifications.switchType": { $in: v.split(",") },
+      }),
+      brightness: (v) => ({
+        "specifications.brightness": { $in: v.split(",") },
+      }),
+      lightingMethod: (v) => ({
+        "specifications.lightingMethod": { $in: v.split(",") },
+      }),
+      controlType: (v) => ({
+        "specifications.controlType": { $in: v.split(",") },
+      }),
+      controlMethod: (v) => ({
+        "specifications.controlMethod": { $in: v.split(",") },
+      }),
+      bulbShapeSize: (v) => ({
+        "specifications.bulbShapeSize": { $in: v.split(",") },
+      }),
+      bulbBase: (v) => ({ "specifications.bulbBase": { $in: v.split(",") } }),
+      lightColor: (v) => ({
+        "specifications.lightColor": { $in: v.split(",") },
+      }),
+      capacity: (v) => ({ "specifications.capacity": { $in: v.split(",") } }),
+      cutType: (v) => ({ "specifications.cutType": { $in: v.split(",") } }),
+      telephoneType: (v) => ({
+        "specifications.telephoneType": { $in: v.split(",") },
+      }),
+      powerSource: (v) => ({
+        "specifications.powerSource": { $in: v.split(",") },
+      }),
+      answeringSystemType: (v) => ({
+        "specifications.answeringSystemType": { $in: v.split(",") },
+      }),
+      supportedInternetServices: (v) => ({
+        "specifications.supportedInternetServices": { $in: v.split(",") },
+      }),
+      memoryStorageCapacity: (v) => ({
+        "specifications.memoryStorageCapacity": { $in: v.split(",") },
+      }),
+      wirelessCarrier: (v) => ({
+        "specifications.wirelessCarrier": { $in: v.split(",") },
+      }),
+      formFactor: (v) => ({
+        "specifications.formFactor": { $in: v.split(",") },
       }),
     };
 
