@@ -30,7 +30,6 @@ router
   .delete(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
-    uploadSingleImage,
     categoryController.deleteParentCategory
   );
 router
@@ -54,7 +53,6 @@ router
   .delete(
     authenticateUser,
     authorizePermissions(ROLE.ADMIN),
-    uploadSingleImage,
     categoryController.deleteChildCategory
   );
 
