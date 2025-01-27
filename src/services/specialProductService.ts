@@ -148,21 +148,21 @@ class SpecialProductService {
     ]);
   }
 
-  async getProductFilters(parentCategoryId: string, categoryId?: string) {
-    const matchStage: any = {
-      parentCategoryId: new Types.ObjectId(parentCategoryId),
-    };
-
+  async getProductFilters(parentCategoryId?: string, categoryId?: string) {
+    const matchStage: any = {};
+    if (parentCategoryId) {
+      matchStage.parentCategoryId = new Types.ObjectId(parentCategoryId);
+    }
     if (categoryId) {
       matchStage.categoryId = new Types.ObjectId(categoryId);
     }
 
     const result = await Product.aggregate([
       { $match: matchStage },
-      { $unwind: "$variants" },
       {
         $facet: {
           priceRange: [
+            { $unwind: "$variants" },
             {
               $group: {
                 _id: null,
@@ -170,38 +170,49 @@ class SpecialProductService {
                 lowestPrice: { $min: "$variants.globalPrice" },
               },
             },
-            { $project: { _id: 0, highestPrice: 1, lowestPrice: 1 } },
+            {
+              $project: {
+                _id: 0,
+                highestPrice: { $ceil: "$highestPrice" },
+                lowestPrice: { $floor: "$lowestPrice" },
+              },
+            },
           ],
           specifications: [
             {
               $project: {
                 _id: 0,
-                color: 1,
-                brand: 1,
-                ramSize: "$specifications.ramSize",
-                graphics: "$specifications.graphics",
-                processor: "$specifications.processor",
-                cpuSpeed: "$specifications.cpuSpeed",
-                cpuManufacturer: "$specifications.cpuManufacturer",
-                graphicsProcessorManufacturer:
-                  "$specifications.graphicsProcessorManufacturer",
-                screenSize: "$specifications.screenSize",
-                hardDriveSize: "$specifications.hardDriveSize",
-                audioOutput: "$specifications.audioOutput",
-                connectivity: "$specifications.connectivity",
-                resolution: "$specifications.resolution",
-                storage: "$specifications.storage",
-                memory: "$specifications.memory",
-                cameraResolution: "$specifications.cameraResolution",
-                operatingSystem: "$specifications.operatingSystem",
-                batteryLife: "$specifications.batteryLife",
-                weight: "$specifications.weight",
-                sensor: "$specifications.sensor",
-                compatiblePlatform: "$specifications.compatiblePlatform",
-                energyEfficiency: "$specifications.energyEfficiency",
+                specificationsArray: {
+                  $objectToArray: {
+                    $mergeObjects: [
+                      {
+                        $arrayToObject: {
+                          $filter: {
+                            input: { $objectToArray: "$specifications" },
+                            as: "spec",
+                            cond: {
+                              $not: {
+                                $in: [
+                                  "$$spec.k",
+                                  [
+                                    "itemModelNumber",
+                                    "batteries",
+                                    "weight",
+                                    "dimensions",
+                                    "_id",
+                                  ],
+                                ],
+                              },
+                            },
+                          },
+                        },
+                      },
+                      { brand: "$brand", color: "$color" },
+                    ],
+                  },
+                },
               },
             },
-            { $project: { specificationsArray: { $objectToArray: "$$ROOT" } } },
             { $unwind: "$specificationsArray" },
             {
               $group: {
@@ -211,9 +222,49 @@ class SpecialProductService {
             },
             {
               $project: {
-                key: "$_id",
-                filters: { $sortArray: { input: "$values", sortBy: -1 } },
                 _id: 0,
+                key: "$_id",
+                values: {
+                  $reduce: {
+                    input: {
+                      $map: {
+                        input: "$values",
+                        as: "value",
+                        in: {
+                          $split: ["$$value", ","], // Split first, trim inside later
+                        },
+                      },
+                    },
+                    initialValue: [],
+                    in: {
+                      $concatArrays: ["$$value", "$$this"],
+                    },
+                  },
+                },
+              },
+            },
+            {
+              $project: {
+                key: 1,
+                values: {
+                  $map: {
+                    input: "$values",
+                    as: "val",
+                    in: { $trim: { input: "$$val" } }, // Trim all values
+                  },
+                },
+              },
+            },
+            {
+              $project: {
+                key: 1,
+                values: { $setUnion: ["$values", []] }, // Remove duplicates once, after trimming
+              },
+            },
+            {
+              $project: {
+                key: 1,
+                values: { $sortArray: { input: "$values", sortBy: 1 } }, // Sort alphabetically
               },
             },
             { $sort: { key: 1 } },
